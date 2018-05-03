@@ -1,11 +1,21 @@
 import pygame
 import random
 import time
+import os
+import sys
 pygame.init()
 
+
+# Checks the OS type to make sure that the paths are correct
+osType = "\\"
+
+if os.name == "posix":
+    osType = "/"
+else:
+    osType = "\\"
 # Window height and width
-width = 1000
-height = 1000
+width = 800
+height = 800
 
 
 # Making some color variables so that they are easy to call
@@ -18,7 +28,7 @@ gold = (255, 215, 0)
 
 centerScreen = [width/2, height/2]
 
-#Initilizing the screen
+# Initilizing the screen
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snakey")
 icon = pygame.image.load("icon.png")
@@ -26,20 +36,20 @@ pygame.display.set_icon(icon)
 running = False
 
 # Initializes the sounds
-click = pygame.mixer.Sound("audio\\click.wav")
+click = pygame.mixer.Sound("audio{}click.wav".format(osType))
 
 # Size of the snake in pixels
-snakesize = 30
+snakesize = 50
 
 # Allows for custom textures
-texturePath = "textures\\default\\"
+texturePath = "textures{}default{}".format(osType, osType)
 
 # Chance variables
 goldAppleChance = .01
 doubleChance = .1
 
 # Number of ms in between each frame
-gameSpeed = 80
+gameSpeed = 45
 
 # Snake Direction
 xVelocity = 0
@@ -131,7 +141,7 @@ score = 0
 
 
 # Imports avaliable save files
-saves = open("saves\\saves.txt", "r")
+saves = open("saves{}saves.txt".format(osType), "r")
 avaliable = []
 for line in saves:
     temp = line.strip()
@@ -199,7 +209,7 @@ def restart():
 def loadGame(file, seconds = 1):
     global loaded, saveScreen, menu, scoreText, gameInfo, gameOpen, hs
     # Loads saves into a dictionary
-    gameSave = open("saves\\" + file + ".txt", "r")
+    gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
     for line in gameSave:
         tempTup = line.strip().split(" = ")
@@ -225,8 +235,10 @@ def loadGame(file, seconds = 1):
 
     gameSave.close()
     gameOpen = file
+
     # Runs the loading animation then sets the variables to their correct state so the game can move on
-    loading(seconds)
+    # Wondering if nessary loading wont load on Mac OS
+    #loading(seconds)
     loaded = True
     saveScreen = False
     menu = True
@@ -234,17 +246,24 @@ def loadGame(file, seconds = 1):
 
 def saveGame(file):
     global gameInfo
-    gameSave = open("saves\\" + file + ".txt", "w")
-    for key, val in gameInfo.items():
-        gameSave.write(key + " = " + str(val) + "\n")
+    print(type(file))
+    if file == None:
+            pass
+    else:
+        gameSave = open("saves{}".format(osType) + file + ".txt", "w")
+        for key, val in gameInfo.items():
+            gameSave.write(key + " = " + str(val) + "\n")
 
 # Creates a loading animation for 3 seconds
 def loading(seconds = 1):
+    print("work")
     for i in range(1,4):
+        print(i)
         dots = "." * i
         screen.fill(white)
         displayText("Loading" + dots, black, (centerScreen[0] + len(dots) * 5, centerScreen[1]))
         pygame.display.flip()
+        print("test")
         pygame.time.wait(int(1000 * seconds))
 
 saveScreen = True
@@ -265,27 +284,34 @@ while saveScreen:
             if pos < ((height-100)/3) + 100 and pos > 100:
                 if avaliable[0] == "New Game":
                     avaliable[0] = "Save 1"
-                loadGame(avaliable[0], .5)
+                loadGame(avaliable[0])
 
             elif pos > ((height-100)/3) + 100 and pos < 2 * (height-100)/3 + 100:
                 if avaliable[1] == "New Game":
                     avaliable[1] = "Save 2"
-                loadGame(avaliable[1], .5)
+                loadGame(avaliable[1])
 
             elif pos > 2 * (height-100)/3 + 100:
                 if avaliable[2] == "New Game":
                     avaliable[2] = "Save 3"
-                loadGame(avaliable[2], .5)
+                loadGame(avaliable[2])
     # So that the screen does not load the frame after the save names are updated
     if loaded:
         break
 
-    pos = pygame.mouse.get_pos()[1]
-    if pos < ((height - 100) / 3) + 100 and pos > 100:
+    pos = pygame.mouse.get_pos()
+
+    # Checks to see if mouse is in the window based on x pos
+    if pos[0] > 0 and pos[0] < width:
+        inWindow = True
+    else:
+        inWindow = False
+
+    if pos[1] < ((height - 100) / 3) + 100 and pos[1] > 100 and inWindow:
         pygame.draw.rect(screen, sky_blue,(0, 100, width, (height - 100)/3))
-    elif pos > ((height - 100) / 3) + 100 and pos < 2 * (height - 100) / 3 + 100:
+    elif pos[1] > ((height - 100) / 3) + 100 and pos[1] < 2 * (height - 100) / 3 + 100 and inWindow:
         pygame.draw.rect(screen, sky_blue, (0, (height - 100)/3 + 100, width, (height - 100) / 3))
-    elif pos > 2 * (height - 100) / 3 + 100:
+    elif pos[1] > 2 * (height - 100) / 3 + 100 and pos[1] < height and inWindow:
         pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100)/3 + 100, width, (height - 100) / 3))
 
     displayText("Snake", green, [width / 2, 50])
@@ -304,7 +330,7 @@ while saveScreen:
 
     pygame.display.flip()
 
-saves = open("saves\\saves.txt", "w")
+saves = open("saves{}saves.txt".format(osType), "w")
 for i in avaliable:
     saves.write(i + " \n")
 saves.close()
@@ -698,6 +724,7 @@ while menu:
 
 
 saveGame(gameOpen)
+
 # When all loops are exited game quits
 pygame.quit()
-quit()
+os._exit(1)
