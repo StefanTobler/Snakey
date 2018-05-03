@@ -2,9 +2,10 @@ import pygame
 import random
 import time
 import os
+import sys
 pygame.init()
 
-# Test
+
 # Checks the OS type to make sure that the paths are correct
 osType = "\\"
 
@@ -27,7 +28,7 @@ gold = (255, 215, 0)
 
 centerScreen = [width/2, height/2]
 
-#Initilizing the screen
+# Initilizing the screen
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snakey")
 icon = pygame.image.load("icon.png")
@@ -243,9 +244,13 @@ def loadGame(file, seconds = 1):
 
 def saveGame(file):
     global gameInfo
-    gameSave = open("saves{}".format(osType) + file + ".txt", "w")
-    for key, val in gameInfo.items():
-        gameSave.write(key + " = " + str(val) + "\n")
+    print(type(file))
+    if file == None:
+            pass
+    else:
+        gameSave = open("saves{}".format(osType) + file + ".txt", "w")
+        for key, val in gameInfo.items():
+            gameSave.write(key + " = " + str(val) + "\n")
 
 # Creates a loading animation for 3 seconds
 def loading(seconds = 1):
@@ -274,17 +279,17 @@ while saveScreen:
             if pos < ((height-100)/3) + 100 and pos > 100:
                 if avaliable[0] == "New Game":
                     avaliable[0] = "Save 1"
-                loadGame(avaliable[0], .5)
+                loadGame(avaliable[0])
 
             elif pos > ((height-100)/3) + 100 and pos < 2 * (height-100)/3 + 100:
                 if avaliable[1] == "New Game":
                     avaliable[1] = "Save 2"
-                loadGame(avaliable[1], .5)
+                loadGame(avaliable[1])
 
             elif pos > 2 * (height-100)/3 + 100:
                 if avaliable[2] == "New Game":
                     avaliable[2] = "Save 3"
-                loadGame(avaliable[2], .5)
+                loadGame(avaliable[2])
     # So that the screen does not load the frame after the save names are updated
     if loaded:
         break
@@ -707,6 +712,7 @@ while menu:
 
 
 saveGame(gameOpen)
+
 # When all loops are exited game quits
 pygame.quit()
-quit()
+os._exit(1)
