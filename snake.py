@@ -4,8 +4,8 @@ import time
 import os
 pygame.init()
 
-
-#Checks the OS type to make sure that the paths are correct
+# Test
+# Checks the OS type to make sure that the paths are correct
 osType = "\\"
 
 if os.name == "posix":
