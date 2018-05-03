@@ -14,8 +14,8 @@ if os.name == "posix":
 else:
     osType = "\\"
 # Window height and width
-width = 1000
-height = 1000
+width = 800
+height = 800
 
 
 # Making some color variables so that they are easy to call
@@ -235,8 +235,10 @@ def loadGame(file, seconds = 1):
 
     gameSave.close()
     gameOpen = file
+
     # Runs the loading animation then sets the variables to their correct state so the game can move on
-    loading(seconds)
+    # Wondering if nessary loading wont load on Mac OS
+    #loading(seconds)
     loaded = True
     saveScreen = False
     menu = True
@@ -254,11 +256,14 @@ def saveGame(file):
 
 # Creates a loading animation for 3 seconds
 def loading(seconds = 1):
+    print("work")
     for i in range(1,4):
+        print(i)
         dots = "." * i
         screen.fill(white)
         displayText("Loading" + dots, black, (centerScreen[0] + len(dots) * 5, centerScreen[1]))
         pygame.display.flip()
+        print("test")
         pygame.time.wait(int(1000 * seconds))
 
 saveScreen = True
@@ -294,12 +299,19 @@ while saveScreen:
     if loaded:
         break
 
-    pos = pygame.mouse.get_pos()[1]
-    if pos < ((height - 100) / 3) + 100 and pos > 100:
+    pos = pygame.mouse.get_pos()
+
+    # Checks to see if mouse is in the window based on x pos
+    if pos[0] > 0 and pos[0] < width:
+        inWindow = True
+    else:
+        inWindow = False
+
+    if pos[1] < ((height - 100) / 3) + 100 and pos[1] > 100 and inWindow:
         pygame.draw.rect(screen, sky_blue,(0, 100, width, (height - 100)/3))
-    elif pos > ((height - 100) / 3) + 100 and pos < 2 * (height - 100) / 3 + 100:
+    elif pos[1] > ((height - 100) / 3) + 100 and pos[1] < 2 * (height - 100) / 3 + 100 and inWindow:
         pygame.draw.rect(screen, sky_blue, (0, (height - 100)/3 + 100, width, (height - 100) / 3))
-    elif pos > 2 * (height - 100) / 3 + 100:
+    elif pos[1] > 2 * (height - 100) / 3 + 100 and pos[1] < height and inWindow:
         pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100)/3 + 100, width, (height - 100) / 3))
 
     displayText("Snake", green, [width / 2, 50])
