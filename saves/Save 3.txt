@@ -1,0 +1,4 @@
+highscore = 0
+classic = False
+robo = False
+gamesPlayed = 0
