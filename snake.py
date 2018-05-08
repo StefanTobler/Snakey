@@ -306,25 +306,56 @@ while saveScreen:
         elif event.type == pygame.JOYBUTTONDOWN:
             controller = True
             if event.button == 0:
-                print("up")
+                for i in range(len(selection)):
+                    if selection[i]:
+                        selection[i] = False
+                        try:
+                            selection[i - 1] = True
+                        except:
+                            selection[0] = True
+                        finally:
+                            break
             elif event.button == 1:
-                print("down")
-            elif event.button == 2:
-                print("left")
-            elif event.button == 3:
-                print("right")
+                for i in range(len(selection)):
+                    if selection[i]:
+                        selection[i] = False
+                        try:
+                            selection[i + 1] = True
+                        except:
+                            selection[0] = True
+                        finally:
+                            break
             elif event.button == 11:
-                print("A")
+                if selection[0]:
+                    if avaliable[0] == "New Game":
+                        avaliable[0] = "Save 1"
+                    loadGame(avaliable[0])
+                    selection = [True, False, False]
+                elif selection[1]:
+                    if avaliable[1] == "New Game":
+                        avaliable[1] = "Save 2"
+                    loadGame(avaliable[1])
+                    selection = [True, False, False]
+                elif selection[3]:
+                    if avaliable[2] == "New Game":
+                        avaliable[2] = "Save 3"
+                    loadGame(avaliable[2])
+                    selection = [True, False, False]
+
+
+
 
 
     # So that the screen does not load the frame after the save names are updated
     if loaded:
         break
 
+    # Checks for mouse movement
     pos = pygame.mouse.get_pos()
     if not (pos[0] == lastKnowsPos[0] and pos[1] == lastKnowsPos[1]):
         lastKnowsPos = pos
         controller = False
+
     # Checks to see if mouse is in the window based on x pos
     if not controller:
         if pos[0] > 0 and pos[0] < width:
@@ -338,6 +369,17 @@ while saveScreen:
             pygame.draw.rect(screen, sky_blue, (0, (height - 100)/3 + 100, width, (height - 100) / 3))
         elif pos[1] > 2 * (height - 100) / 3 + 100 and pos[1] < height and inWindow:
             pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100)/3 + 100, width, (height - 100) / 3))
+
+    # Updates screen if controller is in use
+    if controller:
+        if selection[0]:
+            pygame.draw.rect(screen, sky_blue, (0, 100, width, (height - 100) / 3))
+
+        elif selection[1]:
+            pygame.draw.rect(screen, sky_blue, (0, (height - 100) / 3 + 100, width, (height - 100) / 3))
+
+        elif selection[2]:
+            pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100) / 3 + 100, width, (height - 100) / 3))
 
     # Draws the text and displays text
     displayText("Snake", green, [width / 2, 50])
@@ -590,6 +632,19 @@ while menu:
                 elif event.key == pygame.K_LEFT:
                     yVelocity = 0
                     xVelocity = -snakesize
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 0:
+                    yVelocity = -snakesize
+                    xVelocity = 0
+                elif event.button == 1:
+                    yVelocity = snakesize
+                    xVelocity = 0
+                elif event.button == 2:
+                    yVelocity = 0
+                    xVelocity = -snakesize
+                elif event.button == 3:
+                    yVelocity = 0
+                    xVelocity = snakesize
 
         for i in snakeBody:
             if i.x < 0:
