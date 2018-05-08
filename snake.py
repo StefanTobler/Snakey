@@ -5,7 +5,6 @@ import os
 import sys
 pygame.init()
 
-
 # Checks the OS type to make sure that the paths are correct
 osType = "\\"
 
@@ -16,7 +15,6 @@ else:
 # Window height and width
 width = 800
 height = 800
-
 
 # Making some color variables so that they are easy to call
 white = (255, 255, 255)
@@ -42,7 +40,7 @@ click = pygame.mixer.Sound("audio{}click.wav".format(osType))
 snakesize = 50
 
 # Allows for custom textures
-texturePath = "textures{}default{}".format(osType, osType)
+texturePath = "textures{}robo{}".format(osType, osType)
 
 # Chance variables
 goldAppleChance = .01
@@ -191,6 +189,20 @@ appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
 # Game info is a dictionary of each variable and its condition
 gameInfo = {}
 
+
+# Variable to check if the controller is in use
+controller = False
+
+lastKnowsPos = [0,0]
+
+# Joystick initalization
+if pygame.joystick.get_count() >= 1:
+    joysticks = pygame.joystick.get_count()
+
+    for i in range(joysticks):
+        joystick = pygame.joystick.Joystick(i)
+        joystick.init()
+
 # Restarts all the game variables
 def restart():
     global lost, score, snakeBody, xVelocity, yVelocity, goldApple, apples
@@ -246,7 +258,6 @@ def loadGame(file, seconds = 1):
 
 def saveGame(file):
     global gameInfo
-    print(type(file))
     if file == None:
             pass
     else:
@@ -254,16 +265,13 @@ def saveGame(file):
         for key, val in gameInfo.items():
             gameSave.write(key + " = " + str(val) + "\n")
 
-# Creates a loading animation for 3 seconds
+# Creates a loading animation for 3 seconds **currently not used**
 def loading(seconds = 1):
-    print("work")
     for i in range(1,4):
-        print(i)
         dots = "." * i
         screen.fill(white)
         displayText("Loading" + dots, black, (centerScreen[0] + len(dots) * 5, centerScreen[1]))
         pygame.display.flip()
-        print("test")
         pygame.time.wait(int(1000 * seconds))
 
 saveScreen = True
@@ -295,25 +303,43 @@ while saveScreen:
                 if avaliable[2] == "New Game":
                     avaliable[2] = "Save 3"
                 loadGame(avaliable[2])
+        elif event.type == pygame.JOYBUTTONDOWN:
+            controller = True
+            if event.button == 0:
+                print("up")
+            elif event.button == 1:
+                print("down")
+            elif event.button == 2:
+                print("left")
+            elif event.button == 3:
+                print("right")
+            elif event.button == 11:
+                print("A")
+
+
     # So that the screen does not load the frame after the save names are updated
     if loaded:
         break
 
     pos = pygame.mouse.get_pos()
-
+    if not (pos[0] == lastKnowsPos[0] and pos[1] == lastKnowsPos[1]):
+        lastKnowsPos = pos
+        controller = False
     # Checks to see if mouse is in the window based on x pos
-    if pos[0] > 0 and pos[0] < width:
-        inWindow = True
-    else:
-        inWindow = False
+    if not controller:
+        if pos[0] > 0 and pos[0] < width:
+            inWindow = True
+        else:
+            inWindow = False
 
-    if pos[1] < ((height - 100) / 3) + 100 and pos[1] > 100 and inWindow:
-        pygame.draw.rect(screen, sky_blue,(0, 100, width, (height - 100)/3))
-    elif pos[1] > ((height - 100) / 3) + 100 and pos[1] < 2 * (height - 100) / 3 + 100 and inWindow:
-        pygame.draw.rect(screen, sky_blue, (0, (height - 100)/3 + 100, width, (height - 100) / 3))
-    elif pos[1] > 2 * (height - 100) / 3 + 100 and pos[1] < height and inWindow:
-        pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100)/3 + 100, width, (height - 100) / 3))
+        if pos[1] < ((height - 100) / 3) + 100 and pos[1] > 100 and inWindow:
+            pygame.draw.rect(screen, sky_blue,(0, 100, width, (height - 100)/3))
+        elif pos[1] > ((height - 100) / 3) + 100 and pos[1] < 2 * (height - 100) / 3 + 100 and inWindow:
+            pygame.draw.rect(screen, sky_blue, (0, (height - 100)/3 + 100, width, (height - 100) / 3))
+        elif pos[1] > 2 * (height - 100) / 3 + 100 and pos[1] < height and inWindow:
+            pygame.draw.rect(screen, sky_blue, (0, 2 * (height - 100)/3 + 100, width, (height - 100) / 3))
 
+    # Draws the text and displays text
     displayText("Snake", green, [width / 2, 50])
 
     third = (height - 100)/3
@@ -327,7 +353,7 @@ while saveScreen:
         pygame.draw.rect(screen, black, line)
         startLoc[1] += third
 
-
+    # Updates the display
     pygame.display.flip()
 
 saves = open("saves{}saves.txt".format(osType), "w")
@@ -364,7 +390,7 @@ while menu:
                             fCount = 0
                             break
             elif event.key == pygame.K_UP:
-                # Updates the menu pbject that should be flashing
+                # Updates the menu object that should be flashing
                 for i in range(len(selection)):
                     if selection[i]:
                         selection[i] = False
@@ -489,7 +515,7 @@ while menu:
                     menu = False
                     running = True
                 elif event.key == pygame.K_DOWN:
-                    # Updates the menu pbject that should be flashing
+                    # Updates the menu object that should be flashing
                     for i in range(len(selection)):
                         if selection[i]:
                             selection[i] = False
@@ -502,7 +528,7 @@ while menu:
                                 fCount = 0
                                 break
                 elif event.key == pygame.K_UP:
-                    # Updates the menu pbject that should be flashing
+                    # Updates the menu object that should be flashing
                     for i in range(len(selection)):
                         if selection[i]:
                             selection[i] = False
@@ -575,8 +601,8 @@ while menu:
             elif i.y >= height:
                 i.y = 0
 
-        snakeBody[0].x += xVelocity
-        snakeBody[0].y += yVelocity
+        # snakeBody[0].x += xVelocity
+        # snakeBody[0].y += yVelocity
 
         screen.fill(white)
 
@@ -584,14 +610,14 @@ while menu:
         for i in range(len(apples) - 1, -1, -1):
             screen.blit(appleTexture, (apples[i].x, apples[i].y))
 
+            # Checks for snake is eating the apple.
             if snakeBody[0].x == apples[i].x and snakeBody[0].y == apples[i].y:
 
                 score += 1
                 applecords = newApple()
 
                 if len(snakeBody) == 1:
-                    for j in range(0, 2):
-                        snake = Body()
+                        snake = Body(snakeBody[0].x - xVelocity, snakeBody[0].y - yVelocity)
                         snakeBody.append(snake)
                 else:
                     snake = Body()
@@ -627,40 +653,46 @@ while menu:
 
 
         # Draws the snake
+        times = 0
         for i in range(len(snakeBody)-1, -1, -1):
-
+            times += 1
             # Draws the body with textures
             if i != 0:
 
                 # If i is the last element in the list blit tail image
                 if i == len(snakeBody)-1:
-                    if snakeBody[i].x - snakeBody[i-2].x < 0:
+                    print('tail')
+                    if snakeBody[i].x - snakeBody[i-1].x < 0:
                         screen.blit(tailL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                    elif snakeBody[i].x - snakeBody[i-2].x > 0:
+                        print("1")
+                    elif snakeBody[i].x - snakeBody[i-1].x > 0:
                         screen.blit(tailR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                    elif snakeBody[i].y - snakeBody[i-2].y < 0:
+                        print("2")
+                    elif snakeBody[i].y - snakeBody[i-1].y < 0:
                         screen.blit(tailU, (snakeBody[i - 1].x, snakeBody[i - 1].y))
+                        print("3")
                     else:
-                     screen.blit(tailD, (snakeBody[i-1].x, snakeBody[i-1].y))
+                        screen.blit(tailD, (snakeBody[i-1].x, snakeBody[i-1].y))
+                        print("4")
 
                 # Checks body part to the left and right to know if the snake is horizontal
-                elif snakeBody[i].x == snakeBody[i-2].x and snakeBody[i].x == snakeBody[i+1].x:
+                elif snakeBody[i].x == snakeBody[i-1].x and snakeBody[i].x == snakeBody[i+1].x:
                     screen.blit(bodyUD, (snakeBody[i-1].x, snakeBody[i-1].y))
 
                 # Checks body part to the left and right to know if the snake is vertical
-                elif snakeBody[i].y == snakeBody[i-2].y and snakeBody[i].y == snakeBody[i+1].y:
+                elif snakeBody[i].y == snakeBody[i-1].y and snakeBody[i].y == snakeBody[i+1].y:
                     screen.blit(bodyLR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
 
                 # Since no other cases were true assumes there is a bend in the snake
                 else:
-                    if i < len(snakeBody)-2:
-                        if (snakeBody[i].x > snakeBody[i-2].x and snakeBody[i].y < snakeBody[i+2].y) or (snakeBody[i].y < snakeBody[i-2].y and snakeBody[i].x > snakeBody[i+2].x):
+                    if i < len(snakeBody)-1:
+                        if (snakeBody[i].x > snakeBody[i-1].x and snakeBody[i].y < snakeBody[i+1].y) or (snakeBody[i].y < snakeBody[i-1].y and snakeBody[i].x > snakeBody[i+1].x):
                             screen.blit(bendTR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
 
-                        elif(snakeBody[i].y > snakeBody[i-2].y and snakeBody[i].x < snakeBody[i+2].x) or (snakeBody[i].x < snakeBody[i-2].x and snakeBody[i].y > snakeBody[i+2].y):
+                        elif(snakeBody[i].y > snakeBody[i-1].y and snakeBody[i].x < snakeBody[i+1].x) or (snakeBody[i].x < snakeBody[i-1].x and snakeBody[i].y > snakeBody[i+1].y):
                             screen.blit(bendBL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
 
-                        elif(snakeBody[i].x > snakeBody[i-2].x and snakeBody[i].y > snakeBody[i+2].y) or (snakeBody[i].y > snakeBody[i-2].y and snakeBody[i].x > snakeBody[i+2].x):
+                        elif(snakeBody[i].x > snakeBody[i-1].x and snakeBody[i].y > snakeBody[i+1].y) or (snakeBody[i].y > snakeBody[i-1].y and snakeBody[i].x > snakeBody[i+1].x):
                             screen.blit(bendBR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
 
                         else:
@@ -674,6 +706,10 @@ while menu:
 
             # Draws the snakes head with the head texture
             else:
+
+                snakeBody[0].x += xVelocity
+                snakeBody[0].y += yVelocity
+
                 if yVelocity > 0:
                     screen.blit(headD, (snakeBody[i].x, snakeBody[i].y))
                 elif xVelocity != 0:
