@@ -40,14 +40,14 @@ click = pygame.mixer.Sound("audio{}click.wav".format(osType))
 snakesize = 50
 
 # Allows for custom textures
-texturePath = "textures{}robo{}".format(osType, osType)
+texturePath = "textures{}default{}".format(osType, osType)
 
 # Chance variables
 goldAppleChance = .01
 doubleChance = .1
 
 # Number of ms in between each frame
-gameSpeed = 45
+gameSpeed = 55
 
 # Snake Direction
 xVelocity = 0
@@ -312,7 +312,7 @@ while saveScreen:
                         try:
                             selection[i - 1] = True
                         except:
-                            selection[0] = True
+                            selection[2] = True
                         finally:
                             break
             elif event.button == 1:
@@ -452,6 +452,40 @@ while menu:
                     selection = [True, False, False, False]
                 else:
                     menu = False
+        elif event.type == pygame.JOYBUTTONDOWN:
+            if event.button == 0:
+                for i in range(len(selection)):
+                    if selection[i]:
+                        selection[i] = False
+                        try:
+                            selection[i - 1] = True
+                        except:
+                            selection[2] = True
+                        finally:
+                            show = False
+                            fCount = 0
+                            break
+            elif event.button == 1:
+                for i in range(len(selection)):
+                    if selection[i]:
+                        selection[i] = False
+                        try:
+                            selection[i + 1] = True
+                        except:
+                            selection[0] = True
+                        finally:
+                            show = False
+                            fCount = 0
+                            break
+            elif event.button == 11:
+                if selection[0]:
+                    running = True
+                elif selection[1]:
+                    options = True
+                    selection = [True, False, False, False]
+                else:
+                    menu = False
+
 
     # Causes the selected menu option to fade in and out
     if fCount % 25 == 0:
@@ -508,7 +542,7 @@ while menu:
 
         fCount += 1
 
-        if fCount % 25 == 0:
+        if fCount % 20 == 0:
             if show:
                 show = False
             else:
@@ -553,7 +587,7 @@ while menu:
                 menu = False
                 options = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE: #or (event.button):
                     menu = False
                     running = True
                 elif event.key == pygame.K_DOWN:
@@ -577,13 +611,62 @@ while menu:
                             try:
                                 selection[i - 1] = True
                             except:
-                                selection[2] = True
+                                selection[3] = True
                             finally:
                                 show = False
                                 fCount = 0
                                 break
                 # Returns "Game Updated" on the screen and changes the delay per frame
                 elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    if selection[0]:
+                        screen.fill(white)
+                        displayText("Game Updated", red, centerScreen, 75)
+                        gameSpeed = 75
+                        pygame.display.flip()
+                        pygame.time.wait(1000)
+                    elif selection[1]:
+                        screen.fill(white)
+                        displayText("Game Updated", red, centerScreen, 75)
+                        gameSpeed = 55
+                        pygame.display.flip()
+                        pygame.time.wait(1000)
+                    elif selection[2]:
+                        screen.fill(white)
+                        displayText("Game Updated", red, centerScreen, 75)
+                        gameSpeed = 40
+                        pygame.display.flip()
+                        pygame.time.wait(1000)
+                    else:
+                        options = False
+                        selection = [True, False, False]
+
+            # Checks for controller input
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 0:
+                    # Moves through which menu item is selected
+                    for i in range(len(selection)):
+                        if selection[i]:
+                            selection[i] = False
+                            try:
+                                selection[i - 1] = True
+                            except:
+                                selection[3] = True
+                            finally:
+                                show = False
+                                fCount = 0
+                elif event.button == 1:
+                    for i in range(len(selection)):
+                        if selection[i]:
+                            selection[i] = False
+                            try:
+                                selection[i + 1] = True
+                            except:
+                                selection[0] = True
+                            finally:
+                                show = False
+                                fCount = 0
+                                break
+                elif event.button == 11:
                     if selection[0]:
                         screen.fill(white)
                         displayText("Game Updated", red, centerScreen, 75)
@@ -656,9 +739,6 @@ while menu:
             elif i.y >= height:
                 i.y = 0
 
-        # snakeBody[0].x += xVelocity
-        # snakeBody[0].y += yVelocity
-
         screen.fill(white)
 
         # Draws the apples
@@ -671,12 +751,15 @@ while menu:
                 score += 1
                 applecords = newApple()
 
+                # Adds a new part to snake
                 if len(snakeBody) == 1:
                         snake = Body(snakeBody[0].x - xVelocity, snakeBody[0].y - yVelocity)
                         snakeBody.append(snake)
                 else:
                     snake = Body()
                     snakeBody.append(snake)
+
+                # Checks to make sure that the apple is not spawned on a part of the snake
                 for part in snakeBody:
                     if part.x == applecords[0] and part.y == applecords[1]:
                         applecords = newApple()
@@ -706,29 +789,34 @@ while menu:
                         snakeBody.append(snake)
                     goldApple.remove(pos)
 
+        # Update snake
+        # for i in range(len(snakeBody)-1, 0, -1):
+        #     snakeBody[i].x = snakeBody[i - 1].x
+        #     snakeBody[i].y = snakeBody[i - 1].y
+        #
+        # snakeBody[0].x += xVelocity
+        # snakeBody[0].y += yVelocity
+        #
+        # print("ran")
+        # for i in range(len(snakeBody)):
+        #     print(snakeBody[i].x, snakeBody[i].y, end=" : ")
 
         # Draws the snake
-        times = 0
         for i in range(len(snakeBody)-1, -1, -1):
-            times += 1
+
             # Draws the body with textures
             if i != 0:
 
                 # If i is the last element in the list blit tail image
                 if i == len(snakeBody)-1:
-                    print('tail')
                     if snakeBody[i].x - snakeBody[i-1].x < 0:
                         screen.blit(tailL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                        print("1")
                     elif snakeBody[i].x - snakeBody[i-1].x > 0:
                         screen.blit(tailR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                        print("2")
                     elif snakeBody[i].y - snakeBody[i-1].y < 0:
                         screen.blit(tailU, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                        print("3")
                     else:
                         screen.blit(tailD, (snakeBody[i-1].x, snakeBody[i-1].y))
-                        print("4")
 
                 # Checks body part to the left and right to know if the snake is horizontal
                 elif snakeBody[i].x == snakeBody[i-1].x and snakeBody[i].x == snakeBody[i+1].x:
@@ -755,13 +843,12 @@ while menu:
 
 
                 # Gives each body part the location of the body part infront of it.
-                snakeBody[i].x = snakeBody[i-1].x
-                snakeBody[i].y = snakeBody[i-1].y
+                snakeBody[i].x = snakeBody[i - 1].x
+                snakeBody[i].y = snakeBody[i - 1].y
 
 
             # Draws the snakes head with the head texture
             else:
-
                 snakeBody[0].x += xVelocity
                 snakeBody[0].y += yVelocity
 
@@ -774,6 +861,13 @@ while menu:
                         screen.blit(headL, (snakeBody[i].x, snakeBody[i].y))
                 else:
                     screen.blit(head, (snakeBody[i].x, snakeBody[i].y))
+
+
+
+        # print("\n----")
+        # for i in range(len(snakeBody)):
+        #     print(snakeBody[i].x, snakeBody[i].y, end=" : ")
+        # print("\n~~~~~~~~~~~~~")
 
 
         # Checks for snake on snake collision
