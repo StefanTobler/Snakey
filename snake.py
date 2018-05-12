@@ -47,7 +47,7 @@ goldAppleChance = .01
 doubleChance = .1
 
 # Number of ms in between each frame
-gameSpeed = 55
+gameSpeed = 250
 
 # Snake Direction
 xVelocity = 0
@@ -488,7 +488,7 @@ while menu:
 
 
     # Causes the selected menu option to fade in and out
-    if fCount % 25 == 0:
+    if fCount % 10 == 0:
         if show:
             show = False
         else:
@@ -542,7 +542,7 @@ while menu:
 
         fCount += 1
 
-        if fCount % 20 == 0:
+        if fCount % 10 == 0:
             if show:
                 show = False
             else:
@@ -729,21 +729,10 @@ while menu:
                     yVelocity = 0
                     xVelocity = snakesize
 
-        for i in snakeBody:
-            if i.x < 0:
-                i.x = width - snakesize
-            elif i.x >= width:
-                i.x = 0
-            if i.y < 0:
-                i.y = height - snakesize
-            elif i.y >= height:
-                i.y = 0
-
         screen.fill(white)
 
         # Draws the apples
         for i in range(len(apples) - 1, -1, -1):
-            screen.blit(appleTexture, (apples[i].x, apples[i].y))
 
             # Checks for snake is eating the apple.
             if snakeBody[0].x == apples[i].x and snakeBody[0].y == apples[i].y:
@@ -763,18 +752,23 @@ while menu:
                 for part in snakeBody:
                     if part.x == applecords[0] and part.y == applecords[1]:
                         applecords = newApple()
+
                 apples[i].x = applecords[0]
                 apples[i].y = applecords[1]
 
                 if len(apples) > 1:
                     apples.remove(apples[i])
+                    continue
 
                 if random.random() < doubleChance:
                     a = Body(newApple()[0], newApple()[1])
                     apples.append(a)
+                    screen.blit(appleTexture, (apples[-1].x, apples[-1].y))
 
                 if random.random() < goldAppleChance:
                     goldApple.append(newApple())
+
+            screen.blit(appleTexture, (apples[i].x, apples[i].y))
 
         # Draws Gold Apple
         if len(goldApple) > 0:
@@ -790,70 +784,73 @@ while menu:
                     goldApple.remove(pos)
 
         # Update snake
-        # for i in range(len(snakeBody)-1, 0, -1):
-        #     snakeBody[i].x = snakeBody[i - 1].x
-        #     snakeBody[i].y = snakeBody[i - 1].y
-        #
-        # snakeBody[0].x += xVelocity
-        # snakeBody[0].y += yVelocity
-        #
-        # print("ran")
-        # for i in range(len(snakeBody)):
-        #     print(snakeBody[i].x, snakeBody[i].y, end=" : ")
+        for i in range(len(snakeBody)-1, 0, -1):
+            snakeBody[i].x = snakeBody[i - 1].x
+            snakeBody[i].y = snakeBody[i - 1].y
+
+        snakeBody[0].x += xVelocity
+        snakeBody[0].y += yVelocity
+
+        for i in snakeBody:
+            if i.x < 0:
+                i.x = width - snakesize
+            elif i.x >= width:
+                i.x = 0
+            if i.y < 0:
+                i.y = height - snakesize
+            elif i.y >= height:
+                i.y = 0
 
         # Draws the snake
         for i in range(len(snakeBody)-1, -1, -1):
-
             # Draws the body with textures
             if i != 0:
 
                 # If i is the last element in the list blit tail image
                 if i == len(snakeBody)-1:
-                    if snakeBody[i].x - snakeBody[i-1].x < 0:
-                        screen.blit(tailL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                    elif snakeBody[i].x - snakeBody[i-1].x > 0:
-                        screen.blit(tailR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                    elif snakeBody[i].y - snakeBody[i-1].y < 0:
-                        screen.blit(tailU, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-                    else:
-                        screen.blit(tailD, (snakeBody[i-1].x, snakeBody[i-1].y))
+                    if (snakeBody[i].x - snakeBody[i-1].x < 0 and snakeBody[i].x - snakeBody[i-1].x > snakesize - width and not(snakeBody[i].x == width - snakesize)) \
+                            or (snakeBody[i].x == width - snakesize and snakeBody[i].x - snakeBody[i-1].x > 0) and abs(snakeBody[i].x - snakeBody[i-1].x) != 50:
+                        screen.blit(tailL, (snakeBody[i].x, snakeBody[i].y))
 
-                # Checks body part to the left and right to know if the snake is horizontal
-                elif snakeBody[i].x == snakeBody[i-1].x and snakeBody[i].x == snakeBody[i+1].x:
-                    screen.blit(bodyUD, (snakeBody[i-1].x, snakeBody[i-1].y))
+                    elif snakeBody[i].x - snakeBody[i-1].x > 0 or (snakeBody[i].x == 0 and snakeBody[i].x - snakeBody[i-1].x < 0):
+                        screen.blit(tailR, (snakeBody[i].x, snakeBody[i].y))
+
+                    elif (snakeBody[i].y - snakeBody[i-1].y < 0 and snakeBody[i].y - snakeBody[i-1].y > snakesize - height and not(snakeBody[i].y == height - snakesize)) \
+                            or (snakeBody[i].y == height - snakesize and snakeBody[i].y - snakeBody[i-1].y > 0 and abs(snakeBody[i].y - snakeBody[i-1].y) != 50):
+                        screen.blit(tailU, (snakeBody[i].x, snakeBody[i].y))
+
+                    else:
+                        screen.blit(tailD, (snakeBody[i].x, snakeBody[i].y))
 
                 # Checks body part to the left and right to know if the snake is vertical
+                elif snakeBody[i].x == snakeBody[i-1].x and snakeBody[i].x == snakeBody[i+1].x:
+                    screen.blit(bodyUD, (snakeBody[i].x, snakeBody[i].y))
+
+                # Checks body part to the left and right to know if the snake is horizontal
                 elif snakeBody[i].y == snakeBody[i-1].y and snakeBody[i].y == snakeBody[i+1].y:
-                    screen.blit(bodyLR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
+                    screen.blit(bodyLR, (snakeBody[i].x, snakeBody[i].y))
 
                 # Since no other cases were true assumes there is a bend in the snake
                 else:
                     if i < len(snakeBody)-1:
                         if (snakeBody[i].x > snakeBody[i-1].x and snakeBody[i].y < snakeBody[i+1].y) or (snakeBody[i].y < snakeBody[i-1].y and snakeBody[i].x > snakeBody[i+1].x):
-                            screen.blit(bendTR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
+                            screen.blit(bendTR, (snakeBody[i].x, snakeBody[i].y))
 
                         elif(snakeBody[i].y > snakeBody[i-1].y and snakeBody[i].x < snakeBody[i+1].x) or (snakeBody[i].x < snakeBody[i-1].x and snakeBody[i].y > snakeBody[i+1].y):
-                            screen.blit(bendBL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
+                            screen.blit(bendBL, (snakeBody[i].x, snakeBody[i].y))
 
                         elif(snakeBody[i].x > snakeBody[i-1].x and snakeBody[i].y > snakeBody[i+1].y) or (snakeBody[i].y > snakeBody[i-1].y and snakeBody[i].x > snakeBody[i+1].x):
-                            screen.blit(bendBR, (snakeBody[i - 1].x, snakeBody[i - 1].y))
+                            screen.blit(bendBR, (snakeBody[i].x, snakeBody[i].y))
 
                         else:
-                            screen.blit(bendTL, (snakeBody[i - 1].x, snakeBody[i - 1].y))
-
-
-                # Gives each body part the location of the body part infront of it.
-                snakeBody[i].x = snakeBody[i - 1].x
-                snakeBody[i].y = snakeBody[i - 1].y
-
+                            screen.blit(bendTL, (snakeBody[i].x, snakeBody[i].y))
 
             # Draws the snakes head with the head texture
             else:
-                snakeBody[0].x += xVelocity
-                snakeBody[0].y += yVelocity
 
                 if yVelocity > 0:
                     screen.blit(headD, (snakeBody[i].x, snakeBody[i].y))
+
                 elif xVelocity != 0:
                     if xVelocity > 0:
                         screen.blit(headR, (snakeBody[i].x, snakeBody[i].y))
@@ -861,14 +858,6 @@ while menu:
                         screen.blit(headL, (snakeBody[i].x, snakeBody[i].y))
                 else:
                     screen.blit(head, (snakeBody[i].x, snakeBody[i].y))
-
-
-
-        # print("\n----")
-        # for i in range(len(snakeBody)):
-        #     print(snakeBody[i].x, snakeBody[i].y, end=" : ")
-        # print("\n~~~~~~~~~~~~~")
-
 
         # Checks for snake on snake collision
         lost = checkCollision(snakeBody)

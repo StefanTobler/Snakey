@@ -1,4 +1,4 @@
-highscore = 30
+highscore = 32
 classic = True
 robo = True
 gamesPlayed = 0

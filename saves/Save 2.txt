@@ -1,4 +1,4 @@
 highscore = 0
-classic = False
-robo = False
+classic = True
+robo = True
 gamesPlayed = 0
