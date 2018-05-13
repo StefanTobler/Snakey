@@ -47,7 +47,7 @@ goldAppleChance = .01
 doubleChance = .1
 
 # Number of ms in between each frame
-gameSpeed = 250
+gameSpeed = 55
 
 # Snake Direction
 xVelocity = 0
@@ -863,8 +863,9 @@ while menu:
         lost = checkCollision(snakeBody)
 
         # Updates display
-        pygame.display.flip()
-        pygame.time.wait(gameSpeed)
+        if not lost:
+            pygame.display.flip()
+            pygame.time.wait(gameSpeed)
 
         # Lost loop
         while lost:
