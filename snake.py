@@ -31,16 +31,12 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snakey")
 icon = pygame.image.load("icon.png")
 pygame.display.set_icon(icon)
-running = False
 
 # Initializes the sounds
 click = pygame.mixer.Sound("audio{}click.wav".format(osType))
 
 # Size of the snake in pixels
 snakesize = 50
-
-# Allows for custom textures
-texturePath = "textures{}default{}".format(osType, osType)
 
 # Chance variables
 goldAppleChance = .01
@@ -59,6 +55,8 @@ snakeBody = []
 # Which file is open
 gameOpen = None
 
+# Name of the skins
+skins = []
 # Snake body part has a x and an y
 class Body():
     def __init__(self, x=-100, y=0):
@@ -92,7 +90,6 @@ goldApple = []
 # Initilizes the snake head
 sn = Body(x = width/2, y = height/2)
 snakeBody.append(sn)
-lost = False
 
 # Checks for collision in the list of snake body parts. If two body parts occupy the same location then the player loses
 def checkCollision(list):
@@ -117,8 +114,6 @@ def displayText(msg, color, location=[0,0], textSize=55):
     screen.blit(text, (location[0] - x/2, location[1] - y/2))
 
 
-menu = False
-
 # Initalizes the locations for the menu options
 scoreLocation = [0,height - 20]
 creditsLocation = [scoreLocation[0] + 400, scoreLocation[1]]
@@ -132,7 +127,27 @@ fCount = 0
 # To show or not to show the flashing menu option
 show = True
 
+# Game loop booleans
+saveScreen = True
+menu = False
+loaded = False
 options = False
+difficulty = False
+snakes = False
+running = False
+lost = False
+
+# Sets all the game loop variables to false. Forces the game to quit
+def quit():
+    global saveScreen, menu, loaded, options, difficulty, snakes, running, lost
+    saveScreen = False
+    menu = False
+    loaded = False
+    options = False
+    difficulty = False
+    snakes = False
+    running = False
+    lost = False
 
 # Number of snake parts added through out the game
 score = 0
@@ -145,45 +160,6 @@ for line in saves:
     temp = line.strip()
     avaliable.append(temp)
 saves.close()
-
-
-
-######################
-# Initalize Textures #
-######################
-    # Heads
-head = pygame.image.load(texturePath + "head.png").convert()
-head = pygame.transform.scale(head, (snakesize, snakesize))
-headL = pygame.transform.rotate(head, 90)
-headR = pygame.transform.rotate(head, -90)
-headD = pygame.transform.flip(head, False, True)
-
-    # Body
-bodyUD = pygame.image.load(texturePath + "body.png").convert()
-bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
-bodyLR = pygame.transform.rotate(bodyUD, 90)
-
-    # Bend
-bendBL = pygame.image.load(texturePath + "bend.png").convert()
-bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
-bendBR = pygame.transform.flip(bendBL, True, False)
-bendTL = pygame.transform.flip(bendBL, False, True)
-bendTR = pygame.transform.flip(bendBR, False, True)
-
-    # Tail
-tailD = pygame.image.load(texturePath + "tail.png").convert()
-tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
-tailU = pygame.transform.flip(tailD, False, True)
-tailL = pygame.transform.rotate(tailU, 90)
-tailR = pygame.transform.rotate(tailD, 90)
-
-    # Gold Apple
-gapple = pygame.image.load(texturePath + "goldapple.png").convert()
-gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
-
-    # Apple
-appleTexture = pygame.image.load(texturePath + "apple.png").convert()
-appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
 
 
 # Game info is a dictionary of each variable and its condition
@@ -219,7 +195,7 @@ def restart():
 
 # Loads in game file
 def loadGame(file, seconds = 1):
-    global loaded, saveScreen, menu, scoreText, gameInfo, gameOpen, hs
+    global loaded, saveScreen, menu, scoreText, gameInfo, gameOpen, hs, skins
     # Loads saves into a dictionary
     gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
@@ -239,6 +215,8 @@ def loadGame(file, seconds = 1):
         if value == "True" or value == "False":
             gameInfo[key] = bool(value)
 
+    # Creates a list of all the avaliable texture names
+    skins = gameInfo["avaliableSkins"].split(",")
 
 
     # Imports the highscore
@@ -255,7 +233,7 @@ def loadGame(file, seconds = 1):
     saveScreen = False
     menu = True
 
-
+# Writes to text document updating all the vatiables
 def saveGame(file):
     global gameInfo
     if file == None:
@@ -264,6 +242,8 @@ def saveGame(file):
         gameSave = open("saves{}".format(osType) + file + ".txt", "w")
         for key, val in gameInfo.items():
             gameSave.write(key + " = " + str(val) + "\n")
+        gameSave.close()
+
 
 # Creates a loading animation for 3 seconds **currently not used**
 def loading(seconds = 1):
@@ -274,18 +254,30 @@ def loading(seconds = 1):
         pygame.display.flip()
         pygame.time.wait(int(1000 * seconds))
 
-saveScreen = True
-loaded = False
-# Load Game Loop
+# Returna a list of true and falses to use for when skin selection is in process
+def getSnakes():
+    global skins
+    temp = [True]
+    for i in range(len(skins)-1):
+        temp.append(False)
+
+    return temp
+
+#
+
+                                    ##################
+                                    # Load Game Loop #
+                                    ##################
+
 while saveScreen:
     screen.fill(white)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            saveScreen = False
+            quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                saveScreen = False
+                quit()
         elif event.type == pygame.MOUSEBUTTONUP:
             click.play()
             pos = pygame.mouse.get_pos()[1]
@@ -403,7 +395,52 @@ for i in avaliable:
     saves.write(i + " \n")
 saves.close()
 
-# Menu loop
+
+# Allows for custom textures
+texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
+
+######################
+# Initalize Textures #
+######################
+    # Heads
+head = pygame.image.load(texturePath + "head.png").convert()
+head = pygame.transform.scale(head, (snakesize, snakesize))
+headL = pygame.transform.rotate(head, 90)
+headR = pygame.transform.rotate(head, -90)
+headD = pygame.transform.flip(head, False, True)
+
+    # Body
+bodyUD = pygame.image.load(texturePath + "body.png").convert()
+bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
+bodyLR = pygame.transform.rotate(bodyUD, 90)
+
+    # Bend
+bendBL = pygame.image.load(texturePath + "bend.png").convert()
+bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
+bendBR = pygame.transform.flip(bendBL, True, False)
+bendTL = pygame.transform.flip(bendBL, False, True)
+bendTR = pygame.transform.flip(bendBR, False, True)
+
+    # Tail
+tailD = pygame.image.load(texturePath + "tail.png").convert()
+tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
+tailU = pygame.transform.flip(tailD, False, True)
+tailL = pygame.transform.rotate(tailU, 90)
+tailR = pygame.transform.rotate(tailD, 90)
+
+    # Gold Apple
+gapple = pygame.image.load(texturePath + "goldapple.png").convert()
+gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
+
+    # Apple
+appleTexture = pygame.image.load(texturePath + "apple.png").convert()
+appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
+
+lock = pygame.image.load("textures{}lock.png".format(osType)).convert()
+
+                                    #############
+                                    # Menu loop #
+                                    #############
 while menu:
 
     screen.fill(white)
@@ -414,10 +451,10 @@ while menu:
     # Checks for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            menu = False
+            quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                menu = False
+                quit()
             elif event.key == pygame.K_DOWN:
                 # Updates the menu object that should be flashing
                 for i in range(len(selection)):
@@ -446,12 +483,13 @@ while menu:
                             break
             elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 if selection[0]:
+                    gameInfo["gamesPlayed"] += 1
                     running = True
                 elif selection[1]:
                     options = True
-                    selection = [True, False, False, False]
+                    selection = [True, False, False]
                 else:
-                    menu = False
+                    quit()
         elif event.type == pygame.JOYBUTTONDOWN:
             if event.button == 0:
                 for i in range(len(selection)):
@@ -480,11 +518,12 @@ while menu:
             elif event.button == 11:
                 if selection[0]:
                     running = True
+                    gameInfo["gamesPlayed"] += 1
                 elif selection[1]:
                     options = True
-                    selection = [True, False, False, False]
+                    selection = [True, False, False]
                 else:
-                    menu = False
+                    quit()
 
 
     # Causes the selected menu option to fade in and out
@@ -503,19 +542,19 @@ while menu:
         if show:
             displayText("Start Game", black, startGame)
 
-        displayText("Difficulity", black, centerScreen)
+        displayText("Options", black, centerScreen)
         displayText("Exit", black, exitPos)
 
     elif selection[1]:
         displayText("Start Game", black, startGame)
         if show:
-            displayText("Difficulity", black, centerScreen)
+            displayText("Options", black, centerScreen)
 
         displayText("Exit", black, exitPos)
 
     elif selection[2]:
         displayText("Start Game", black, startGame)
-        displayText("Difficulity", black, centerScreen)
+        displayText("Options", black, centerScreen)
 
         if show:
             displayText("Exit", black, exitPos)
@@ -536,7 +575,11 @@ while menu:
     pygame.time.wait(15)
     pygame.display.flip()
 
-    # Options loop
+
+                                        ################
+                                        # Options loop #
+                                        ################
+
     while options:
         screen.fill(white)
 
@@ -548,48 +591,35 @@ while menu:
             else:
                 show = True
 
-        displayText("Options", black, [width / 2, 50])
-
-        # Determines which element is flashing
         if selection[0]:
             if show:
-                displayText("Easy", black, startGame)
+                displayText("Snakes", black, startGame)
 
-            displayText("Moderate", black, centerScreen)
-            displayText("Hard", black, exitPos)
-            displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+            displayText("Difficulty", black, centerScreen)
+            displayText("Back", black, exitPos)
 
         elif selection[1]:
-            displayText("Easy", black, startGame)
+            displayText("Snakes", black, startGame)
             if show:
-                displayText("Moderate", black, centerScreen)
+                displayText("Difficulty", black, centerScreen)
 
-            displayText("Hard", black, exitPos)
-            displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+            displayText("Back", black, exitPos)
 
         elif selection[2]:
-            displayText("Easy", black, startGame)
-            displayText("Moderate", black, centerScreen)
-            if show:
-                displayText("Hard", black, exitPos)
+            displayText("Snakes", black, startGame)
+            displayText("Difficulty", black, centerScreen)
 
-            displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
-
-        elif selection[3]:
-            displayText("Easy", black, startGame)
-            displayText("Moderate", black, centerScreen)
-            displayText("Hard", black, exitPos)
             if show:
-                displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+                displayText("Back", black, exitPos)
+
+        displayText("Options", black, [width / 2, 50])
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                menu = False
-                options = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE: #or (event.button):
-                    menu = False
-                    running = True
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    quit()
                 elif event.key == pygame.K_DOWN:
                     # Updates the menu object that should be flashing
                     for i in range(len(selection)):
@@ -611,49 +641,33 @@ while menu:
                             try:
                                 selection[i - 1] = True
                             except:
-                                selection[3] = True
+                                selection[2] = True
                             finally:
                                 show = False
                                 fCount = 0
                                 break
-                # Returns "Game Updated" on the screen and changes the delay per frame
                 elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     if selection[0]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 75
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
+                        snakes = True
+                        selection = getSnakes()
                     elif selection[1]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 55
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
-                    elif selection[2]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 40
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
+                        difficulty = True
+                        selection = [True, False, False, False]
                     else:
                         options = False
-                        selection = [True, False, False]
-
-            # Checks for controller input
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
-                    # Moves through which menu item is selected
                     for i in range(len(selection)):
                         if selection[i]:
                             selection[i] = False
                             try:
                                 selection[i - 1] = True
                             except:
-                                selection[3] = True
+                                selection[2] = True
                             finally:
                                 show = False
                                 fCount = 0
+                                break
                 elif event.button == 1:
                     for i in range(len(selection)):
                         if selection[i]:
@@ -668,41 +682,257 @@ while menu:
                                 break
                 elif event.button == 11:
                     if selection[0]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 75
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
+                        snakes = True
+                        selection = getSnakes()
                     elif selection[1]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 55
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
-                    elif selection[2]:
-                        screen.fill(white)
-                        displayText("Game Updated", red, centerScreen, 75)
-                        gameSpeed = 40
-                        pygame.display.flip()
-                        pygame.time.wait(1000)
+                        difficulty = True
+                        selection = [True, False, False, False]
                     else:
                         options = False
-                        selection = [True, False, False]
 
         pygame.time.wait(15)
         pygame.display.flip()
 
-    # Main game loop
+        while snakes:
+            screen.fill(white)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        quit()
+                    elif event.key == pygame.K_RIGHT:
+                        # Updates which snake skin should be displayed
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i + 1] = True
+                                except:
+                                    selection[0] = True
+                    elif event.key == pygame.K_LEFT:
+                        # Updates which snake skin should be displayed
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i - 1] = True
+                                except:
+                                    selection[2] = True
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                        if selection[0]:
+                            pass
+                        elif selection[1]:
+                            pass
+                        else:
+                            snakes = False
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 2:
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i - 1] = True
+                                except:
+                                    selection[2] = True
+                    elif event.button == 3:
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i + 1] = True
+                                except:
+                                    selection[0] = True
+                                finally:
+                                    show = False
+                                    break
+                    elif event.button == 11:
+                        if selection[0]:
+                            pass
+                        elif selection[1]:
+                            pass
+                        else:
+                            snakes = False
+
+
+            pygame.time.wait(11)
+            pygame.display.flip()
+
+                                        ###################
+                                        # DIFFICULTY MENU #
+                                        ###################
+        while difficulty:
+
+            screen.fill(white)
+
+            fCount += 1
+
+            if fCount % 10 == 0:
+                if show:
+                    show = False
+                else:
+                    show = True
+
+            displayText("Difficulty", black, [width / 2, 50])
+
+
+            # Determines which element is flashing
+            if selection[0]:
+                if show:
+                    displayText("Easy", black, startGame)
+
+                displayText("Moderate", black, centerScreen)
+                displayText("Hard", black, exitPos)
+                displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+
+            elif selection[1]:
+                displayText("Easy", black, startGame)
+                if show:
+                    displayText("Moderate", black, centerScreen)
+
+                displayText("Hard", black, exitPos)
+                displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+
+            elif selection[2]:
+                displayText("Easy", black, startGame)
+                displayText("Moderate", black, centerScreen)
+                if show:
+                    displayText("Hard", black, exitPos)
+
+                displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+
+            elif selection[3]:
+                displayText("Easy", black, startGame)
+                displayText("Moderate", black, centerScreen)
+                displayText("Hard", black, exitPos)
+                if show:
+                    displayText("Back", black, [centerScreen[0], centerScreen[1] + 200])
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE: #or (event.button):
+                        quit()
+                    elif event.key == pygame.K_DOWN:
+                        # Updates the menu object that should be flashing
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i + 1] = True
+                                except:
+                                    selection[0] = True
+                                finally:
+                                    show = False
+                                    fCount = 0
+                                    break
+                    elif event.key == pygame.K_UP:
+                        # Updates the menu object that should be flashing
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i - 1] = True
+                                except:
+                                    selection[3] = True
+                                finally:
+                                    show = False
+                                    fCount = 0
+                                    break
+                    # Returns "Game Updated" on the screen and changes the delay per frame
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                        if selection[0]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 75
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        elif selection[1]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 55
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        elif selection[2]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 40
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        else:
+                            difficulty = False
+                            selection = [True, False, False]
+
+                # Checks for controller input
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 0:
+                        # Moves through which menu item is selected
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i - 1] = True
+                                except:
+                                    selection[3] = True
+                                finally:
+                                    show = False
+                                    fCount = 0
+                    elif event.button == 1:
+                        for i in range(len(selection)):
+                            if selection[i]:
+                                selection[i] = False
+                                try:
+                                    selection[i + 1] = True
+                                except:
+                                    selection[0] = True
+                                finally:
+                                    show = False
+                                    fCount = 0
+                                    break
+                    elif event.button == 11:
+                        if selection[0]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 75
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        elif selection[1]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 55
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        elif selection[2]:
+                            screen.fill(white)
+                            displayText("Game Updated", red, centerScreen, 75)
+                            gameSpeed = 40
+                            pygame.display.flip()
+                            pygame.time.wait(1000)
+                        else:
+                            difficulty = False
+                            selection = [True, False, False]
+
+            pygame.time.wait(15)
+            pygame.display.flip()
+
+
+
+
+
+                                        ##################
+                                        # Main game loop #
+                                        ##################
+
     while running:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-                menu = False
+                quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
-                    menu = False
+                    quit()
                 if event.key == pygame.K_UP:
                     yVelocity = -snakesize
                     xVelocity = 0
@@ -775,6 +1005,7 @@ while menu:
             for pos in goldApple:
                 screen.blit(gapple, pos)
                 if snakeBody[0].x == pos[0] and snakeBody[0].y == pos[1]:
+                    gameInfo["goldApples"] += 1
                     increment = 0
                     score += 5
                     for i in range(5):
@@ -867,7 +1098,13 @@ while menu:
             pygame.display.flip()
             pygame.time.wait(gameSpeed)
 
-        # Lost loop
+
+
+
+                                        #############
+                                        # Lost loop #
+                                        #############
+
         while lost:
             screen.fill(white)
             displayText("You lost!", red, centerScreen, 75)
@@ -881,16 +1118,13 @@ while menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
-                    lost = False
-                    menu = False
+                    quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
-                        lost = False
-                        menu = False
+                        quit()
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         restart()
+                        gameInfo["gamesPlayed"] += 1
                     elif event.key == pygame.K_m:
                         restart()
                         running = False
