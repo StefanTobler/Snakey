@@ -18,7 +18,7 @@ height = 800
 
 # Making some color variables so that they are easy to call
 white = (255, 255, 255)
-sky_blue = (18,178,238, 100)
+sky_blue = (18,178,238,100)
 black = (0, 0, 0)
 red = (255, 0, 0)
 green = (34, 145, 20)
@@ -284,9 +284,16 @@ def getSnakes():
 
 # Loads textures for the snakes option so that textures are not rendered everytime. Increases effiency
 def getSnakeOpt():
-    global lock, arrow
+    global lock, arrowLeft, arrowRight
+
+
     lock = pygame.image.load("textures{}options{}snakes{}lock.png".format(osType,osType,osType)).convert()
-    arrow = pygame.image.load("textures{}options{}snakes{}lock.png".format(osType,osType,osType)).convert()
+
+
+    arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert()
+    arrowLeft = pygame.transform.scale(arrowLeft, (3*snakesize, 3*snakesize))
+    arrowRight = pygame.transform.flip(arrowLeft, True, False)
+
 
 # Loads new game from format file
 def loadFormat(file):
@@ -392,7 +399,7 @@ while saveScreen:
 
     # Checks to see if mouse is in the window based on x pos
     if not controller:
-        if pos[0] >= 0 and pos[0] < width-1:
+        if pos[0] > 0 and pos[0] < width-1:
             inWindow = True
         else:
             inWindow = False
@@ -746,9 +753,42 @@ while menu:
         while snakes:
             screen.fill(white)
 
+            displayText("Snakes", black, [width / 2, 50])
+
+            # Checks for mouse movement
+            pos = pygame.mouse.get_pos()
+            if not (pos[0] == lastKnowsPos[0] and pos[1] == lastKnowsPos[1]):
+                lastKnowsPos = pos
+                controller = False
+
+            # Checks to see if mouse is in the window based on x pos
+            if not controller:
+                if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
+                    inWindow = True
+                else:
+                    inWindow = False
+
+                # Changes color of the boxes when the mouse is over it
+                if pos[0] < 100 and pos[1] < 52 and inWindow:
+                    pygame.draw.rect(screen, red, (0,0,100,52))
+
+            displayText("Back", black, (50,25), 40)
+            pygame.draw.rect(screen, black, (0,50,100,2))
+            pygame.draw.rect(screen, black, (100,0,2,52))
+
+            screen.blit(arrowLeft, (0, height/2 - (3*snakesize)/2))
+            screen.blit(arrowRight, (width - 3 * snakesize, height/2 - (3*snakesize)/2))
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quit()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    click.play()
+                    # If player clicks in the back box then the snake menu will end
+                    if pos[0] < 100 and pos[1] < 52 and inWindow:
+                        snakes = False
+                        selection = [True, False, False]
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         quit()
