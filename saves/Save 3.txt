@@ -1,4 +1,8 @@
 highscore = 0
+gamesPlayed = 0
+goldApples = 0
+avaliableSkins = default,classic,robo,golden
+texture = default
 classic = False
 robo = False
-gamesPlayed = 0
+golden = false

@@ -1,8 +1,8 @@
-highscore = 2
+highscore = 19
 gamesPlayed = 3
 goldApples = 0
 avaliableSkins = default,classic,robo,golden
 texture = default
-classic = True
-robo = True
-golden = True
+classic = False
+robo = False
+golden = false

@@ -212,8 +212,11 @@ def loadGame(file, seconds = 1):
         except:
             pass
 
-        if value == "True" or value == "False":
-            gameInfo[key] = bool(value)
+        if value == "True":
+            gameInfo[key] = True
+        elif value == "False":
+            gameInfo[key] = False
+
 
     # Creates a list of all the avaliable texture names
     skins = gameInfo["avaliableSkins"].split(",")
@@ -254,6 +257,22 @@ def loading(seconds = 1):
         pygame.display.flip()
         pygame.time.wait(int(1000 * seconds))
 
+# Updates Game info based on achievements
+def updateAchievements():
+    global gameInfo
+
+    # Unlocks golden skin when player gets a golden apple
+    if gameInfo["goldApples"] > 0 and not gameInfo["golden"]:
+        gameInfo["golden"] = True
+
+    # Unlocks classic skin when player plays 10 games
+    if gameInfo["gamesPlayed"] >= 10 and not gameInfo["classic"]:
+        gameInfo["classic"] = True
+
+    # Unlocks Robo skin when player gets a score of 20 in a game
+    if gameInfo["highscore"] > 20 and not gameInfo["robo"]:
+        gameInfo["robo"] = True
+
 # Returna a list of true and falses to use for when skin selection is in process
 def getSnakes():
     global skins
@@ -262,6 +281,22 @@ def getSnakes():
         temp.append(False)
 
     return temp
+
+# Loads textures for the snakes option so that textures are not rendered everytime. Increases effiency
+def getSnakeOpt():
+    global lock, arrow
+    lock = pygame.image.load("textures{}options{}snakes{}lock.png".format(osType,osType,osType)).convert()
+    arrow = pygame.image.load("textures{}options{}snakes{}lock.png".format(osType,osType,osType)).convert()
+
+# Loads new game from format file
+def loadFormat(file):
+    form = open("saves{}format.txt".format(osType), "r")
+    save = open("saves{}".format(osType) + file + ".txt", "w")
+    for i in form:
+        save.write(i)
+
+    form.close()
+    save.close()
 
 #
 
@@ -284,17 +319,21 @@ while saveScreen:
             if pos < ((height-100)/3) + 100 and pos > 100:
                 if avaliable[0] == "New Game":
                     avaliable[0] = "Save 1"
+                    loadFormat(avaliable[0])
                 loadGame(avaliable[0])
 
             elif pos > ((height-100)/3) + 100 and pos < 2 * (height-100)/3 + 100:
                 if avaliable[1] == "New Game":
                     avaliable[1] = "Save 2"
+                    loadFormat(avaliable[1])
                 loadGame(avaliable[1])
 
             elif pos > 2 * (height-100)/3 + 100:
                 if avaliable[2] == "New Game":
                     avaliable[2] = "Save 3"
+                    loadFormat(avaliable[2])
                 loadGame(avaliable[2])
+
         elif event.type == pygame.JOYBUTTONDOWN:
             controller = True
             if event.button == 0:
@@ -321,16 +360,19 @@ while saveScreen:
                 if selection[0]:
                     if avaliable[0] == "New Game":
                         avaliable[0] = "Save 1"
+                        loadFormat(avaliable[0])
                     loadGame(avaliable[0])
                     selection = [True, False, False]
                 elif selection[1]:
                     if avaliable[1] == "New Game":
                         avaliable[1] = "Save 2"
+                        loadFormat(avaliable[1])
                     loadGame(avaliable[1])
                     selection = [True, False, False]
                 elif selection[3]:
                     if avaliable[2] == "New Game":
                         avaliable[2] = "Save 3"
+                        loadFormat(avaliable[2])
                     loadGame(avaliable[2])
                     selection = [True, False, False]
 
@@ -350,7 +392,7 @@ while saveScreen:
 
     # Checks to see if mouse is in the window based on x pos
     if not controller:
-        if pos[0] > 0 and pos[0] < width:
+        if pos[0] >= 0 and pos[0] < width-1:
             inWindow = True
         else:
             inWindow = False
@@ -397,50 +439,52 @@ saves.close()
 
 
 # Allows for custom textures
-texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
+if gameOpen != None:
+    texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
 
-######################
-# Initalize Textures #
-######################
-    # Heads
-head = pygame.image.load(texturePath + "head.png").convert()
-head = pygame.transform.scale(head, (snakesize, snakesize))
-headL = pygame.transform.rotate(head, 90)
-headR = pygame.transform.rotate(head, -90)
-headD = pygame.transform.flip(head, False, True)
+    ######################
+    # Initalize Textures #
+    ######################
+        # Heads
+    head = pygame.image.load(texturePath + "head.png").convert()
+    head = pygame.transform.scale(head, (snakesize, snakesize))
+    headL = pygame.transform.rotate(head, 90)
+    headR = pygame.transform.rotate(head, -90)
+    headD = pygame.transform.flip(head, False, True)
 
-    # Body
-bodyUD = pygame.image.load(texturePath + "body.png").convert()
-bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
-bodyLR = pygame.transform.rotate(bodyUD, 90)
+        # Body
+    bodyUD = pygame.image.load(texturePath + "body.png").convert()
+    bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
+    bodyLR = pygame.transform.rotate(bodyUD, 90)
 
-    # Bend
-bendBL = pygame.image.load(texturePath + "bend.png").convert()
-bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
-bendBR = pygame.transform.flip(bendBL, True, False)
-bendTL = pygame.transform.flip(bendBL, False, True)
-bendTR = pygame.transform.flip(bendBR, False, True)
+        # Bend
+    bendBL = pygame.image.load(texturePath + "bend.png").convert()
+    bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
+    bendBR = pygame.transform.flip(bendBL, True, False)
+    bendTL = pygame.transform.flip(bendBL, False, True)
+    bendTR = pygame.transform.flip(bendBR, False, True)
 
-    # Tail
-tailD = pygame.image.load(texturePath + "tail.png").convert()
-tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
-tailU = pygame.transform.flip(tailD, False, True)
-tailL = pygame.transform.rotate(tailU, 90)
-tailR = pygame.transform.rotate(tailD, 90)
+        # Tail
+    tailD = pygame.image.load(texturePath + "tail.png").convert()
+    tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
+    tailU = pygame.transform.flip(tailD, False, True)
+    tailL = pygame.transform.rotate(tailU, 90)
+    tailR = pygame.transform.rotate(tailD, 90)
 
-    # Gold Apple
-gapple = pygame.image.load(texturePath + "goldapple.png").convert()
-gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
+        # Gold Apple
+    gapple = pygame.image.load(texturePath + "goldapple.png").convert()
+    gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
 
-    # Apple
-appleTexture = pygame.image.load(texturePath + "apple.png").convert()
-appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
+        # Apple
+    appleTexture = pygame.image.load(texturePath + "apple.png").convert()
+    appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
 
-lock = pygame.image.load("textures{}lock.png".format(osType)).convert()
 
                                     #############
                                     # Menu loop #
                                     #############
+
+
 while menu:
 
     screen.fill(white)
@@ -650,6 +694,7 @@ while menu:
                     if selection[0]:
                         snakes = True
                         selection = getSnakes()
+                        getSnakeOpt()
                     elif selection[1]:
                         difficulty = True
                         selection = [True, False, False, False]
@@ -684,6 +729,7 @@ while menu:
                     if selection[0]:
                         snakes = True
                         selection = getSnakes()
+                        getSnakeOpt()
                     elif selection[1]:
                         difficulty = True
                         selection = [True, False, False, False]
@@ -693,6 +739,10 @@ while menu:
         pygame.time.wait(15)
         pygame.display.flip()
 
+
+                                    #############################
+                                    # Change Snake Texture Menu #
+                                    #############################
         while snakes:
             screen.fill(white)
 
@@ -1120,6 +1170,7 @@ while menu:
                 if event.type == pygame.QUIT:
                     quit()
                 if event.type == pygame.KEYDOWN:
+                    updateAchievements()
                     if event.key == pygame.K_ESCAPE:
                         quit()
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -1130,10 +1181,9 @@ while menu:
                         running = False
 
             pygame.display.flip()
-
-
+if gameOpen != None:
+    updateAchievements()
 saveGame(gameOpen)
-
 # When all loops are exited game quits
 pygame.quit()
 os._exit(1)
