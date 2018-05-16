@@ -1,0 +1,5 @@
+create each segment of snake named: head, body, bend, tail all 50 x 50 .png
+
+Put in a named folder add folder name to opened saves in "availableSkins = " line and add to the format.txt file
+
+Create a 150 x 150 png composite of head, body, tail and name it the skins name place this image in the directory Snakey>Textures>Options>Skins

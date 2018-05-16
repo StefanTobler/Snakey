@@ -1,6 +1,6 @@
 highscore = 19
-gamesPlayed = 3
-goldApples = 0
+gamesPlayed = 4
+goldApples = 1
 avaliableSkins = default,classic,robo,golden
 texture = default
 classic = False
