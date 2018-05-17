@@ -1,5 +1,15 @@
-create each segment of snake named: head, body, bend, tail all 50 x 50 .png
+NOTE: ENSURE THAT NAMING IS CONSISTANT ACROSS ALL FILES SPELLING AND CASE MUST BE EXACTLY THE SAME
+
+
+Create each segment of snake named: head, body, bend, tail, apple, and goldenapple all 50 x 50 .png
 
 Put in a named folder add folder name to opened saves in "availableSkins = " line and add to the format.txt file
 
-Create a 150 x 150 png composite of head, body, tail and name it the skins name place this image in the directory Snakey>Textures>Options>Skins
+Also add a new line in each open save and the format file with the following format: skinname = True/False
+If skin must require an unlock set it to False
+
+If you
+
+Create a 200 x 200 png composite of head, body, tail, apples and name it the skins name place this image in the directory Snakey>textures>options>snakes
+
+Follow instructions on line 314 in the getSnakeOpt() function to add snake to the preview menu.
