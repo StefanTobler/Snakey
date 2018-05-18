@@ -374,6 +374,11 @@ def getSnakeOpt():
     classic = Skin(classicPreview, "Just the good o'le", "Play 10 games")
     skinPreviews.append(classic)
 
+    roboPreview = pygame.image.load("textures{}options{}snakes{}robo.png".format(osType, osType, osType)).convert_alpha()
+    roboPreview = pygame.transform.scale(roboPreview, (4 * snakesize, 4 * snakesize))
+    robo = Skin(roboPreview, "Boop Beep Hsss", "Reach a score of 20")
+    skinPreviews.append(robo)
+
 # Position for skinPreviews list to display
 current = 0
 
@@ -560,52 +565,54 @@ saves.close()
 
 
 # Allows for custom textures
-if gameOpen != None:
-    texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
+def initTextures():
+    global head, headL, headR, headD, bendBL, bendBR ,bendTL, bendTR, tailD, tailL, tailR, tailU, gapple, appleTexture, bodyUD, bodyLR
+    if gameOpen != None:
+        texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
 
-    ######################
-    # Initalize Textures #
-    ######################
-        # Heads
-    head = pygame.image.load(texturePath + "head.png").convert()
-    head = pygame.transform.scale(head, (snakesize, snakesize))
-    headL = pygame.transform.rotate(head, 90)
-    headR = pygame.transform.rotate(head, -90)
-    headD = pygame.transform.flip(head, False, True)
+        ######################
+        # Initalize Textures #
+        ######################
+            # Heads
+        head = pygame.image.load(texturePath + "head.png").convert()
+        head = pygame.transform.scale(head, (snakesize, snakesize))
+        headL = pygame.transform.rotate(head, 90)
+        headR = pygame.transform.rotate(head, -90)
+        headD = pygame.transform.flip(head, False, True)
 
-        # Body
-    bodyUD = pygame.image.load(texturePath + "body.png").convert()
-    bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
-    bodyLR = pygame.transform.rotate(bodyUD, 90)
+            # Body
+        bodyUD = pygame.image.load(texturePath + "body.png").convert()
+        bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
+        bodyLR = pygame.transform.rotate(bodyUD, 90)
 
-        # Bend
-    bendBL = pygame.image.load(texturePath + "bend.png").convert()
-    bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
-    bendBR = pygame.transform.flip(bendBL, True, False)
-    bendTL = pygame.transform.flip(bendBL, False, True)
-    bendTR = pygame.transform.flip(bendBR, False, True)
+            # Bend
+        bendBL = pygame.image.load(texturePath + "bend.png").convert()
+        bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
+        bendBR = pygame.transform.flip(bendBL, True, False)
+        bendTL = pygame.transform.flip(bendBL, False, True)
+        bendTR = pygame.transform.flip(bendBR, False, True)
 
-        # Tail
-    tailD = pygame.image.load(texturePath + "tail.png").convert()
-    tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
-    tailU = pygame.transform.flip(tailD, False, True)
-    tailL = pygame.transform.rotate(tailU, 90)
-    tailR = pygame.transform.rotate(tailD, 90)
+            # Tail
+        tailD = pygame.image.load(texturePath + "tail.png").convert()
+        tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
+        tailU = pygame.transform.flip(tailD, False, True)
+        tailL = pygame.transform.rotate(tailU, 90)
+        tailR = pygame.transform.rotate(tailD, 90)
 
-        # Gold Apple
-    gapple = pygame.image.load(texturePath + "goldapple.png").convert()
-    gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
+            # Gold Apple
+        gapple = pygame.image.load(texturePath + "goldapple.png").convert()
+        gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
 
-        # Apple
-    appleTexture = pygame.image.load(texturePath + "apple.png").convert()
-    appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
+            # Apple
+        appleTexture = pygame.image.load(texturePath + "apple.png").convert()
+        appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
 
 
                                     #############
                                     # Menu loop #
                                     #############
 
-
+initTextures()
 while menu:
 
     screen.fill(white)
@@ -821,6 +828,7 @@ while menu:
                         selection = [True, False, False, False]
                     else:
                         options = False
+                        selection = [True, False, False]
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     for i in range(len(selection)):
@@ -856,6 +864,7 @@ while menu:
                         selection = [True, False, False, False]
                     else:
                         options = False
+                        selection = [True, False, False]
 
         pygame.time.wait(15)
         pygame.display.flip()
@@ -910,6 +919,7 @@ while menu:
                     if pos[0] < 100 and pos[1] < 52 and inWindow:
                         snakes = False
                         selection = [True, False, False]
+                        current = 0
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         quit()
@@ -925,19 +935,16 @@ while menu:
                     elif event.key == pygame.K_LEFT:
                         # Updates which snake skin should be displayed
                         if current > 0:
-                            animate("right")
+                            #animate("right")
                             current -= 1
                         else:
-                            animate("right")
-                            current = len(skinPreviews)
+                            #animate("right")
+                            current = len(skinPreviews)-1
 
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        if selection[0]:
-                            pass
-                        elif selection[1]:
-                            pass
-                        else:
-                            snakes = False
+                        if gameInfo[skins[current]]:
+                            gameInfo["texture"] = skins[current]
+                            initTextures()
                 elif event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 2:
                         # Updates which snake skin should be displayed
@@ -946,7 +953,7 @@ while menu:
                             current -= 1
                         else:
                             animate("right")
-                            current = len(skinPreviews)
+                            current = len(skinPreviews)-1
 
                     elif event.button == 3:
                         if current < len(skinPreviews) - 1:
