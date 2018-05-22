@@ -350,11 +350,11 @@ def getSnakeOpt():
 
 
     lock = pygame.image.load("textures{}options{}snakes{}lockalpha.png".format(osType,osType,osType)).convert_alpha()
-    lock = pygame.transform.scale(lock, (4 * snakesize, 4 * snakesize))
+    lock = pygame.transform.scale(lock, (4 * snakesize,  4 * snakesize))
 
 
-    arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert()
-    arrowLeft = pygame.transform.scale(arrowLeft, (3*snakesize, 3*snakesize))
+    arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert_alpha()
+    arrowLeft = pygame.transform.scale(arrowLeft, (3 * snakesize, 3 * snakesize))
     arrowRight = pygame.transform.flip(arrowLeft, True, False)
 
     # Format Line for the addition of future textures
@@ -382,49 +382,54 @@ def getSnakeOpt():
 # Position for skinPreviews list to display
 current = 0
 
+# All variables for the snakes menu
+        # Whether or not to display the locked text
+locked = False
+        # Direction of animation
+direction = "NONE"
+        # Speed of animation higher is faster
+animation_speed = 25
+        # Default variable DON'T CHANGE
+rate = 10 * width
+
 # Animates the skin previews to move off the screen and the new one onto the screen
-def animate(direction):
-    global current, skinPreviews
+def animate(direction, i):
+    global current, skinPreviews, skins
+
     direction = direction.lower()
+
     if direction == "left":
-        for i in range(0, int(width/2 + 6 * snakesize), int(snakesize/10)):
-            screen.fill(white)
-            if current < len(skinPreviews) - 1:
-                screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
-                screen.blit(skinPreviews[current + 1].preview, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
-            else:
-                screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize - i, height / 2 - 2 * snakesize))
-                screen.blit(skinPreviews[0].preview, (width + 4 * snakesize - i, height / 2 - 2 * snakesize))
-
-            displayText("Back", black, (50, 25), 40)
-            pygame.draw.rect(screen, black, (0, 50, 100, 2))
-            pygame.draw.rect(screen, black, (100, 0, 2, 52))
-
-            screen.blit(arrowLeft, (0, height / 2 - (3 * snakesize) / 2))
-            screen.blit(arrowRight, (width - 3 * snakesize, height / 2 - (3 * snakesize) / 2))
-
-            pygame.time.wait(1)
-            pygame.display.flip()
+        if current < len(skinPreviews) - 1:
+            screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+            screen.blit(skinPreviews[current + 1].preview, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
+            if not gameInfo[skins[current]]:
+                screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+            if not gameInfo[skins[current + 1]]:
+                screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
+        else:
+            screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize - i, height / 2 - 2 * snakesize))
+            screen.blit(skinPreviews[0].preview, (width + 4 * snakesize - i, height / 2 - 2 * snakesize))
+            if not gameInfo[skins[current]]:
+                screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+            if not gameInfo[skins[0]]:
+                screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
 
     elif direction == "right":
-        for i in range(0, int(width/2 + 6 * snakesize), int(snakesize/10)):
-            screen.fill(white)
-            if current > 0:
-                screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
-                screen.blit(skinPreviews[current-1].preview, (-8 * snakesize, height/2 - 2 * snakesize))
-            else:
-                screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
-                screen.blit(skinPreviews[len(skinPreviews) - 1].preview, (-8 * snakesize, height / 2 - 2 * snakesize))
+        if current > 0:
+            screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
+            screen.blit(skinPreviews[current-1].preview, (-8 * snakesize + i, height/2 - 2 * snakesize))
+            if not gameInfo[skins[current]]:
+                screen.blit(lock, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
+            if not gameInfo[skins[current - 1]]:
+                screen.blit(lock, (-8 * snakesize + i, height/2 - 2 * snakesize))
+        else:
+            screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
+            screen.blit(skinPreviews[len(skinPreviews) - 1].preview, (-8 * snakesize + i, height / 2 - 2 * snakesize))
+            if not gameInfo[skins[current]]:
+                screen.blit(lock, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
+            if not gameInfo[skins[len(skinPreviews) - 1]]:
+                screen.blit(lock, (-8 * snakesize + i, height / 2 - 2 * snakesize))
 
-            displayText("Back", black, (50, 25), 40)
-            pygame.draw.rect(screen, black, (0, 50, 100, 2))
-            pygame.draw.rect(screen, black, (100, 0, 2, 52))
-
-            screen.blit(arrowLeft, (0, height / 2 - (3 * snakesize) / 2))
-            screen.blit(arrowRight, (width - 3 * snakesize, height / 2 - (3 * snakesize) / 2))
-
-            pygame.time.wait(1)
-            pygame.display.flip()
 #
 
                                     ##################
@@ -895,19 +900,60 @@ while menu:
                 if pos[0] < 100 and pos[1] < 52 and inWindow:
                     pygame.draw.rect(screen, red, (0,0,100,52))
 
+            # Checks to see if the game should be displaying a normal image or animation
+            if rate >= width/2 + 6 * snakesize:
+                skinPreviews[current].show()
+                if gameInfo[skins[current]]:
+                    skinPreviews[current].showInfo()
+                else:
+                    skinPreviews[current].showUnlock()
+                    screen.blit(lock, (width/2 - 2 * snakesize, height/2 - 2 * snakesize))
+                if skins[current] == gameInfo["texture"]:
+                    displayText("Selected", red, [width/2, height - 50])
+
+            elif rate >= width/2 + 6 * snakesize - animation_speed and rate < width/2 + 6 * snakesize:
+
+                # Checks for which new preview should be displayed to the screen
+                if direction == "left":
+                    if current < len(skinPreviews) - 1:
+                        current += 1
+                    else:
+                        current = 0
+                elif direction == "right":
+                    if current > 0:
+                        current -= 1
+                    else:
+                        current = len(skinPreviews) - 1
+
+                skinPreviews[current].show()
+                if gameInfo[skins[current]]:
+                    skinPreviews[current].showInfo()
+                else:
+                    skinPreviews[current].showUnlock()
+                    screen.blit(lock, (width / 2 - 2 * snakesize, height / 2 - 2 * snakesize))
+
+                rate += animation_speed
+
+            # Animation statement
+            else:
+                if direction == "left":
+                    animate("left", rate)
+                    rate += animation_speed
+
+                elif direction == "right":
+                    animate("right", rate)
+                    rate += animation_speed
+
+                else:
+                    error.write("ANIMATION DIRECTION ERROR: Error found in animation direction. Direction should either be left or right.")
+
+
             displayText("Back", black, (50,25), 40)
             pygame.draw.rect(screen, black, (0,50,100,2))
             pygame.draw.rect(screen, black, (100,0,2,52))
 
             screen.blit(arrowLeft, (0, height/2 - (3*snakesize)/2))
             screen.blit(arrowRight, (width - 3 * snakesize, height/2 - (3*snakesize)/2))
-
-            skinPreviews[current].show()
-            if gameInfo[skins[current]]:
-                skinPreviews[current].showInfo()
-            else:
-                skinPreviews[current].showUnlock()
-                screen.blit(lock, (width/2 - 2 * snakesize, height/2 - 2 * snakesize))
 
 
             for event in pygame.event.get():
@@ -920,60 +966,72 @@ while menu:
                         snakes = False
                         selection = [True, False, False]
                         current = 0
+                    elif pos[0] <  3 * snakesize and pos[1] > height/2 - (3*snakesize)/2 and pos[1] < height/2 + (3*snakesize)/2 and inWindow:
+                        rate = 0
+                        direction = "right"
+                    elif pos[0] > width - 3 * snakesize and pos[1] > height / 2 - (3 * snakesize) / 2 and pos[1] < height / 2 + (3 * snakesize) / 2 and inWindow:
+                        rate = 0
+                        direction = "left"
+                    elif pos[0] > width/2 - 2 * snakesize and pos[0] < width/2 + 2 * snakesize and pos[1] > height/2 - 2 * snakesize and pos[1] < height/2 + 2 * snakesize and inWindow:
+                        if gameInfo[skins[current]]:
+                            gameInfo["texture"] = skins[current]
+                            initTextures()
+                        else:
+                            displayText("LOCKED", red, centerScreen)
+                            locked = True
+
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         quit()
                     elif event.key == pygame.K_RIGHT:
                         # Updates which snake skin should be displayed
-                        if current < len(skinPreviews) - 1:
-                            animate("left")
-                            current += 1
-                        else:
-                            animate("left")
-                            current = 0
+                        rate = 0
+                        direction = "left"
+
 
                     elif event.key == pygame.K_LEFT:
                         # Updates which snake skin should be displayed
-                        if current > 0:
-                            #animate("right")
-                            current -= 1
-                        else:
-                            #animate("right")
-                            current = len(skinPreviews)-1
+                        rate = 0
+                        direction = "right"
 
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if gameInfo[skins[current]]:
                             gameInfo["texture"] = skins[current]
                             initTextures()
+                        else:
+                            displayText("LOCKED", red, centerScreen)
+                            locked = True
+
                 elif event.type == pygame.JOYBUTTONDOWN:
+                    controller = True
                     if event.button == 2:
                         # Updates which snake skin should be displayed
-                        if current > 0:
-                            animate("right")
-                            current -= 1
-                        else:
-                            animate("right")
-                            current = len(skinPreviews)-1
+                        rate = 0
+                        direction = "right"
 
                     elif event.button == 3:
-                        if current < len(skinPreviews) - 1:
-                            animate("left")
-                            current += 1
-                        else:
-                            animate("left")
-                            current = 0
+                        rate = 0
+                        direction = "left"
 
                     elif event.button == 11:
-                        if selection[0]:
-                            pass
-                        elif selection[1]:
-                            pass
+                        if gameInfo[skins[current]]:
+                            gameInfo["texture"] = skins[current]
+                            initTextures()
                         else:
-                            snakes = False
+                            displayText("LOCKED", red, centerScreen)
+                            locked = True
 
-
-            pygame.time.wait(11)
-            pygame.display.flip()
+            # Fast refresh rate if animation is running and slower more efficent refresh for non animation phase
+            if rate < width/2 + 6 * snakesize:
+                pygame.time.wait(1)
+                pygame.display.flip()
+            else:
+                pygame.display.flip()
+                if locked:
+                    pygame.time.wait(500)
+                    locked = False
+                else:
+                    pygame.time.wait(15)
 
                                         ###################
                                         # DIFFICULTY MENU #
@@ -1177,6 +1235,7 @@ while menu:
 
         screen.fill(white)
 
+        displayText(str(score), (211, 211, 211), centerScreen, int((width + height)/2 * .35))
         # Draws the apples
         for i in range(len(apples) - 1, -1, -1):
 
@@ -1326,7 +1385,7 @@ while menu:
             displayText("You lost!", red, centerScreen, 75)
             displayText("Score: " + str(score), red, [centerScreen[0], centerScreen[1] + 60])
             displayText("Press enter to play again or esc to exit.", black, [centerScreen[0], height - 40], 35)
-            displayText("Press m to go back to the menu.", black, [centerScreen[0], height - 80], 35)
+            displayText("Press M to go back to the menu.", black, [centerScreen[0], height - 80], 35)
 
             # Checks if the score is the new highscore
             if score > hs:
