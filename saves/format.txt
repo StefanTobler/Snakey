@@ -1,9 +1,15 @@
 highscore = 0
 gamesPlayed = 0
 goldApples = 0
-avaliableSkins = default,classic,robo,golden
+totalApples = 0
+timePlayed = 0
+distanceTraveled = 0
+keysPressed = 0
+difficulty = moderate
+avaliableSkins = default,classic,robo,worm,golden
 texture = default
 default = True
 classic = False
 robo = False
+worm = False
 golden = false

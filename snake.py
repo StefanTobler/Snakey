@@ -138,18 +138,23 @@ menu = False
 loaded = False
 options = False
 difficulty = False
+challenges = False
 snakes = False
 running = False
 lost = False
+stats = False
 
 # Sets all the game loop variables to false. Forces the game to quit
+# When adding a new variable make sure to add it to the global line
 def quit():
-    global saveScreen, menu, loaded, options, difficulty, snakes, running, lost
+    global saveScreen, menu, loaded, options, difficulty, snakes, running, lost, challenges, stats
     saveScreen = False
     menu = False
+    stats = False
     loaded = False
     options = False
     difficulty = False
+    challenges = False
     snakes = False
     running = False
     lost = False
@@ -200,7 +205,7 @@ def restart():
 
 # Loads in game file
 def loadGame(file, seconds = 1):
-    global loaded, saveScreen, menu, scoreText, gameInfo, gameOpen, hs, skins
+    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed
     # Loads saves into a dictionary
     gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
@@ -211,6 +216,10 @@ def loadGame(file, seconds = 1):
 
     # Corrects variable types in the dictionary
     for key, value in gameInfo.items():
+        try:
+            gameInfo[key] = float(value)
+        except:
+            pass
         try:
             gameInfo[key] = int(value)
 
@@ -230,10 +239,15 @@ def loadGame(file, seconds = 1):
 
     # Imports the highscore
     hs = int(gameInfo["highscore"])
-    scoreText = "Highscore: " + str(gameInfo["highscore"])
 
     gameSave.close()
     gameOpen = file
+
+    # Gets the set game difficulty
+    if gameInfo["difficulty"] == "hard":
+        gameSpeed = 40
+    elif gameInfo["difficulty"] == "easy":
+        gameSpeed = 75
 
     # Runs the loading animation then sets the variables to their correct state so the game can move on
     # Wondering if nessary loading wont load on Mac OS
@@ -279,6 +293,10 @@ def updateAchievements():
     if gameInfo["highscore"] > 20 and not gameInfo["robo"]:
         gameInfo["robo"] = True
 
+    # Unlocks worm if player has collected over 250 apples
+    if gameInfo["totalApples"] >= 250 and not gameInfo["worm"]:
+        gameInfo["worm"] = True
+
 # Returna a list of true and falses to use for when skin selection is in process
 def getSnakes():
     global skins
@@ -306,6 +324,7 @@ class Skin():
         self.setPreview(img)
         self.setInfo(info)
         self.setUnlock(unlock)
+        self.canShow = True
 
     # Sets the preview to a pygame image
     def setPreview(self, img):
@@ -318,7 +337,17 @@ class Skin():
 
     # Blits the skin preview in the middle of the screen
     def show(self):
-        screen.blit(self.preview, (width/2 - 2 * snakesize, height/2 - 2 * snakesize))
+        # Checks if the data type is correct if it is incorrect once in a single game cucle it will only show the error once.
+        if self.canShow:
+            try:
+                screen.blit(self.preview, (width/2 - 2 * snakesize, height/2 - 2 * snakesize))
+            except AttributeError:
+                displayText("ERROR", red, centerScreen)
+                error.write("SKIN PREVIEW ERROR: Incorrect data type for skin preview. SKIN INFO:" + self.info + "\n")
+                self.canShow = False
+        else:
+            displayText("ERROR", red, centerScreen)
+
 
     # Provide a description for the skin i.e. for golden skin "It glistens in the sun"
     def setInfo(self, info):
@@ -346,38 +375,43 @@ class Skin():
 skinPreviews = []
 # Loads textures for the snakes option so that textures are not rendered everytime. Increases effiency
 def getSnakeOpt():
-    global lock, arrowLeft, arrowRight, classic
+    global lock, arrowLeft, arrowRight
+
+    if len(skinPreviews) != len(skins):
+        lock = pygame.image.load("textures{}options{}snakes{}lockalpha.png".format(osType,osType,osType)).convert_alpha()
+        lock = pygame.transform.scale(lock, (4 * snakesize,  4 * snakesize))
 
 
-    lock = pygame.image.load("textures{}options{}snakes{}lockalpha.png".format(osType,osType,osType)).convert_alpha()
-    lock = pygame.transform.scale(lock, (4 * snakesize,  4 * snakesize))
+        arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert_alpha()
+        arrowLeft = pygame.transform.scale(arrowLeft, (3 * snakesize, 3 * snakesize))
+        arrowRight = pygame.transform.flip(arrowLeft, True, False)
 
+        # Format Line for the addition of future textures
+        # Make sure each texture is added in the same order that it is added in the list on avaliableSkins
+        # previewnamePreview = pygame.image.load("textures{}options{}snakes{}previewname.png".format(osType,osType,osType)).convert_alpha()
+        # previewnamePreview = pygame.transform.scale(previewname, (4*snakesize, 4*snakesize))
+        # previewname = Skin(previewnamePreview, "Info", "Unlock")
+        # skinPreviews.append(previewname)
 
-    arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert_alpha()
-    arrowLeft = pygame.transform.scale(arrowLeft, (3 * snakesize, 3 * snakesize))
-    arrowRight = pygame.transform.flip(arrowLeft, True, False)
+        defaultPreview = pygame.image.load("textures{}options{}snakes{}default.png".format(osType, osType, osType)).convert_alpha()
+        defaultPreview = pygame.transform.scale(defaultPreview, (4 * snakesize, 4 * snakesize))
+        default = Skin(defaultPreview, "JJust slithering")
+        skinPreviews.append(default)
 
-    # Format Line for the addition of future textures
-    # Make sure each texture is added in the same order that it is added in the list on avaliableSkins
-    # previewnamePreview = pygame.image.load("textures{}options{}snakes{}previewname.png".format(osType,osType,osType)).convert_alpha()
-    # previewnamePreview = pygame.transform.scale(previewname, (4*snakesize, 4*snakesize))
-    # previewname = Skin(previewnamePreview, "Info", "Unlock")
-    # skinPreviews.append(previewname)
+        classicPreview = pygame.image.load("textures{}options{}snakes{}classic.png".format(osType,osType,osType)).convert_alpha()
+        classicPreview = pygame.transform.scale(classicPreview, (4*snakesize, 4*snakesize))
+        classic = Skin(classicPreview, "Just the good o'le", "Play 10 games")
+        skinPreviews.append(classic)
 
-    defaultPreview = pygame.image.load("textures{}options{}snakes{}default.png".format(osType, osType, osType)).convert_alpha()
-    defaultPreview = pygame.transform.scale(defaultPreview, (4 * snakesize, 4 * snakesize))
-    default = Skin(defaultPreview, "JJust slithering")
-    skinPreviews.append(default)
+        roboPreview = pygame.image.load("textures{}options{}snakes{}robo.png".format(osType, osType, osType)).convert_alpha()
+        roboPreview = pygame.transform.scale(roboPreview, (4 * snakesize, 4 * snakesize))
+        robo = Skin(roboPreview, "Boop Beep Hsss", "Reach a score of 20")
+        skinPreviews.append(robo)
 
-    classicPreview = pygame.image.load("textures{}options{}snakes{}classic.png".format(osType,osType,osType)).convert_alpha()
-    classicPreview = pygame.transform.scale(classicPreview, (4*snakesize, 4*snakesize))
-    classic = Skin(classicPreview, "Just the good o'le", "Play 10 games")
-    skinPreviews.append(classic)
-
-    roboPreview = pygame.image.load("textures{}options{}snakes{}robo.png".format(osType, osType, osType)).convert_alpha()
-    roboPreview = pygame.transform.scale(roboPreview, (4 * snakesize, 4 * snakesize))
-    robo = Skin(roboPreview, "Boop Beep Hsss", "Reach a score of 20")
-    skinPreviews.append(robo)
+        wormPreview = pygame.image.load("textures{}options{}snakes{}worm.png".format(osType,osType,osType)).convert_alpha()
+        wormPreview = pygame.transform.scale(wormPreview, (4*snakesize, 4*snakesize))
+        worm = Skin(wormPreview, "Develops anus first", " Eat 250 apples")
+        skinPreviews.append(worm)
 
 # Position for skinPreviews list to display
 current = 0
@@ -394,42 +428,63 @@ rate = 10 * width
 
 # Animates the skin previews to move off the screen and the new one onto the screen
 def animate(direction, i):
-    global current, skinPreviews, skins
+    global current, skinPreviews, skins, error
 
     direction = direction.lower()
+    try:
+        if direction == "left":
+            if current < len(skinPreviews) - 1:
+                screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+                screen.blit(skinPreviews[current + 1].preview, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
+                if not gameInfo[skins[current]]:
+                    screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+                if not gameInfo[skins[current + 1]]:
+                    screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
+            else:
+                screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize - i, height / 2 - 2 * snakesize))
+                screen.blit(skinPreviews[0].preview, (width + 4 * snakesize - i, height / 2 - 2 * snakesize))
+                if not gameInfo[skins[current]]:
+                    screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
+                if not gameInfo[skins[0]]:
+                    screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
 
-    if direction == "left":
-        if current < len(skinPreviews) - 1:
-            screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
-            screen.blit(skinPreviews[current + 1].preview, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
-            if not gameInfo[skins[current]]:
-                screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
-            if not gameInfo[skins[current + 1]]:
-                screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
-        else:
-            screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize - i, height / 2 - 2 * snakesize))
-            screen.blit(skinPreviews[0].preview, (width + 4 * snakesize - i, height / 2 - 2 * snakesize))
-            if not gameInfo[skins[current]]:
-                screen.blit(lock, (width/2 - 2 * snakesize - i, height/2 - 2 * snakesize))
-            if not gameInfo[skins[0]]:
-                screen.blit(lock, (width + 4 * snakesize - i, height/2 - 2 * snakesize))
+        elif direction == "right":
+            if current > 0:
+                screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
+                screen.blit(skinPreviews[current-1].preview, (-8 * snakesize + i, height/2 - 2 * snakesize))
+                if not gameInfo[skins[current]]:
+                    screen.blit(lock, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
+                if not gameInfo[skins[current - 1]]:
+                    screen.blit(lock, (-8 * snakesize + i, height/2 - 2 * snakesize))
+            else:
+                screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
+                screen.blit(skinPreviews[len(skinPreviews) - 1].preview, (-8 * snakesize + i, height / 2 - 2 * snakesize))
+                if not gameInfo[skins[current]]:
+                    screen.blit(lock, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
+                if not gameInfo[skins[len(skins) - 1]]:
+                    screen.blit(lock, (-8 * snakesize + i, height / 2 - 2 * snakesize))
+    except AttributeError:
+        displayText("ERROR", red, centerScreen)
+        error.write("ATTRIBUTE ERROR: Incorrect date type being blitted. MUST BE pygame surface check skin import\n")
 
-    elif direction == "right":
-        if current > 0:
-            screen.blit(skinPreviews[current].preview, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
-            screen.blit(skinPreviews[current-1].preview, (-8 * snakesize + i, height/2 - 2 * snakesize))
-            if not gameInfo[skins[current]]:
-                screen.blit(lock, (width/2 - 2 * snakesize + i, height/2 - 2 * snakesize))
-            if not gameInfo[skins[current - 1]]:
-                screen.blit(lock, (-8 * snakesize + i, height/2 - 2 * snakesize))
-        else:
-            screen.blit(skinPreviews[current].preview, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
-            screen.blit(skinPreviews[len(skinPreviews) - 1].preview, (-8 * snakesize + i, height / 2 - 2 * snakesize))
-            if not gameInfo[skins[current]]:
-                screen.blit(lock, (width / 2 - 2 * snakesize + i, height / 2 - 2 * snakesize))
-            if not gameInfo[skins[len(skinPreviews) - 1]]:
-                screen.blit(lock, (-8 * snakesize + i, height / 2 - 2 * snakesize))
 
+def pause():
+    displayText("PAUSED", red, centerScreen, 85)
+
+    pygame.display.flip()
+
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                paused = False
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused = False
+                    quit()
+                elif event.key == pygame.K_p or event.key == pygame.K_BACKSPACE:
+                    paused = False
 #
 
                                     ##################
@@ -579,37 +634,37 @@ def initTextures():
         # Initalize Textures #
         ######################
             # Heads
-        head = pygame.image.load(texturePath + "head.png").convert()
+        head = pygame.image.load(texturePath + "head.png").convert_alpha()
         head = pygame.transform.scale(head, (snakesize, snakesize))
         headL = pygame.transform.rotate(head, 90)
         headR = pygame.transform.rotate(head, -90)
         headD = pygame.transform.flip(head, False, True)
 
             # Body
-        bodyUD = pygame.image.load(texturePath + "body.png").convert()
+        bodyUD = pygame.image.load(texturePath + "body.png").convert_alpha()
         bodyUD = pygame.transform.scale(bodyUD, (snakesize, snakesize))
         bodyLR = pygame.transform.rotate(bodyUD, 90)
 
             # Bend
-        bendBL = pygame.image.load(texturePath + "bend.png").convert()
+        bendBL = pygame.image.load(texturePath + "bend.png").convert_alpha()
         bendBL = pygame.transform.scale(bendBL, (snakesize, snakesize))
         bendBR = pygame.transform.flip(bendBL, True, False)
         bendTL = pygame.transform.flip(bendBL, False, True)
         bendTR = pygame.transform.flip(bendBR, False, True)
 
             # Tail
-        tailD = pygame.image.load(texturePath + "tail.png").convert()
+        tailD = pygame.image.load(texturePath + "tail.png").convert_alpha()
         tailD = pygame.transform.scale(tailD, (snakesize, snakesize))
         tailU = pygame.transform.flip(tailD, False, True)
         tailL = pygame.transform.rotate(tailU, 90)
         tailR = pygame.transform.rotate(tailD, 90)
 
             # Gold Apple
-        gapple = pygame.image.load(texturePath + "goldapple.png").convert()
+        gapple = pygame.image.load(texturePath + "goldapple.png").convert_alpha()
         gapple = pygame.transform.scale(gapple, (snakesize, snakesize))
 
             # Apple
-        appleTexture = pygame.image.load(texturePath + "apple.png").convert()
+        appleTexture = pygame.image.load(texturePath + "apple.png").convert_alpha()
         appleTexture = pygame.transform.scale(appleTexture, (snakesize, snakesize))
 
 
@@ -624,6 +679,29 @@ while menu:
     displayText("Snake", green, [width / 2, 50])
 
     fCount += 1
+
+    # Checks for mouse movement
+    pos = pygame.mouse.get_pos()
+    if not (pos[0] == lastKnowsPos[0] and pos[1] == lastKnowsPos[1]):
+        lastKnowsPos = pos
+        controller = False
+
+    # Checks to see if mouse is in the window based on x pos
+    if not controller:
+        if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
+            inWindow = True
+        else:
+            inWindow = False
+
+    # Checks if the mouse is inside the circle
+    if pos[0] > centerScreen[0] - 20 and pos[0] < centerScreen[0] + 20 and pos[1] < exitPos[1] + 120 \
+            and pos[1] > exitPos[1] + 80 and inWindow:
+        pygame.draw.circle(screen, sky_blue, (int(centerScreen[0]), int(exitPos[1] + 100)), 20)
+
+    # Draws the circle for the stats menu
+    pygame.draw.circle(screen, black, (int(centerScreen[0]), int(exitPos[1] + 100)), 20, 4)
+    displayText("=", black, (int(centerScreen[0]), int(exitPos[1] + 100)), 20)
+
 
     # Checks for events
     for event in pygame.event.get():
@@ -653,7 +731,7 @@ while menu:
                         try:
                             selection[i - 1] = True
                         except:
-                            selection[2] = True
+                            selection[len(selection) - 1] = True
                         finally:
                             show = False
                             fCount = 0
@@ -664,9 +742,17 @@ while menu:
                     running = True
                 elif selection[1]:
                     options = True
-                    selection = [True, False, False]
+                    selection = [True, False, False, False]
                 else:
                     quit()
+            elif event.key == pygame.K_s:
+                stats = True
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if pos[0] > centerScreen[0] - 20 and pos[0] < centerScreen[0] + 20 and pos[1] < exitPos[1] + 120 \
+                    and pos[1] > exitPos[1] + 80 and inWindow:
+                stats = True
+
         elif event.type == pygame.JOYBUTTONDOWN:
             if event.button == 0:
                 for i in range(len(selection)):
@@ -675,7 +761,7 @@ while menu:
                         try:
                             selection[i - 1] = True
                         except:
-                            selection[2] = True
+                            selection[len(selection) - 1] = True
                         finally:
                             show = False
                             fCount = 0
@@ -698,7 +784,7 @@ while menu:
                     gameInfo["gamesPlayed"] += 1
                 elif selection[1]:
                     options = True
-                    selection = [True, False, False]
+                    selection = [True, False, False, False]
                 else:
                     quit()
 
@@ -712,7 +798,8 @@ while menu:
 
     displayText("Recreation by Stefan Tobler", black, creditsLocation, 35)
 
-    displayText(scoreText, black, scoreLocation, 35)
+    displayText("Highscore: " + str(hs), black, scoreLocation, 35)
+
 
     # Checks to see what menu option should be flashing
     if selection[0]:
@@ -752,6 +839,82 @@ while menu:
     pygame.time.wait(15)
     pygame.display.flip()
 
+                                ##############
+                                # STATS PAGE #
+                                ##############
+
+    while stats:
+        screen.fill(white)
+
+        displayText("STATS", black, [width / 2, 50])
+
+        tempTime = gameInfo["timePlayed"]
+        try:
+            hours = tempTime//3600000
+            tempTime -= hours * 3600000
+            minutes = tempTime//60000
+            tempTime -= minutes * 60000
+            seconds = tempTime//1000
+        except:
+            seconds = 0
+            minutes = 0
+            hours = 0
+        if seconds < 10:
+            seconds = "0" + str(seconds)
+        if minutes < 10:
+            minutes = "0" + str(minutes)
+        if hours < 10:
+            hours = "0" + str(hours)
+
+
+        displayText("Time Played: " + str(hours) + ":" + str(minutes) + ":" + str(seconds), black, [centerScreen[0], centerScreen[1]-200], 35)
+
+        displayText("Games Played: " + str(gameInfo["gamesPlayed"]), black, [centerScreen[0], centerScreen[1] - 150], 35)
+
+        displayText("Apples Eaten: " + str(gameInfo["totalApples"]), black, [centerScreen[0], centerScreen[1] - 100], 35)
+
+        displayText("Gold Apples Eaten: " + str(gameInfo["goldApples"]), black, [centerScreen[0], centerScreen[1] - 50], 35)
+
+        displayText("Distance Traveled: " + str(round(gameInfo["distanceTraveled"], 2)) + " kilometers", black, centerScreen, 35)
+
+        displayText("Keys Pressed: " + str(gameInfo["keysPressed"]), black, [centerScreen[0], centerScreen[1] + 50], 35)
+
+        # Checks for mouse movement
+        pos = pygame.mouse.get_pos()
+        if not (pos[0] == lastKnowsPos[0] and pos[1] == lastKnowsPos[1]):
+            lastKnowsPos = pos
+            controller = False
+
+        # Checks to see if mouse is in the window based on x pos
+        if not controller:
+            if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
+                inWindow = True
+            else:
+                inWindow = False
+
+            # Changes color of the boxes when the mouse is over it
+            if pos[0] < 100 and pos[1] < 52 and inWindow:
+                pygame.draw.rect(screen, red, (0, 0, 100, 52))
+
+        displayText("Back", black, (50, 25), 40)
+        pygame.draw.rect(screen, black, (0, 50, 100, 2))
+        pygame.draw.rect(screen, black, (100, 0, 2, 52))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    quit()
+                elif event.key == pygame.K_BACKSPACE:
+                    stats = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if pos[0] < 100 and pos[1] < 52 and inWindow:
+                    stats = False
+
+        pygame.time.wait(55)
+        pygame.display.flip()
 
                                         ################
                                         # Options loop #
@@ -773,21 +936,33 @@ while menu:
                 displayText("Snakes", black, startGame)
 
             displayText("Difficulty", black, centerScreen)
-            displayText("Back", black, exitPos)
+            displayText("Challenges", black, exitPos)
+            displayText("Back", black, [exitPos[0], exitPos[1] + 100])
 
         elif selection[1]:
             displayText("Snakes", black, startGame)
             if show:
                 displayText("Difficulty", black, centerScreen)
 
-            displayText("Back", black, exitPos)
+            displayText("Challenges", black, exitPos)
+            displayText("Back", black, [exitPos[0], exitPos[1] + 100])
+
 
         elif selection[2]:
             displayText("Snakes", black, startGame)
             displayText("Difficulty", black, centerScreen)
-
             if show:
-                displayText("Back", black, exitPos)
+                displayText("Challenges", black, exitPos)
+
+            displayText("Back", black, [exitPos[0], exitPos[1] + 100])
+
+        elif selection[3]:
+            displayText("Snakes", black, startGame)
+            displayText("Difficulty", black, centerScreen)
+            displayText("Challenges", black, exitPos)
+            if show:
+                displayText("Back", black, [exitPos[0], exitPos[1] + 100])
+
 
         displayText("Options", black, [width / 2, 50])
 
@@ -818,7 +993,7 @@ while menu:
                             try:
                                 selection[i - 1] = True
                             except:
-                                selection[2] = True
+                                selection[len(selection)-1] = True
                             finally:
                                 show = False
                                 fCount = 0
@@ -831,9 +1006,14 @@ while menu:
                     elif selection[1]:
                         difficulty = True
                         selection = [True, False, False, False]
+                    elif selection[2]:
+                        challenges = True
                     else:
                         options = False
                         selection = [True, False, False]
+                elif event.key == pygame.K_BACKSPACE:
+                    options = False
+                    selection = [True, False, False]
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     for i in range(len(selection)):
@@ -842,7 +1022,7 @@ while menu:
                             try:
                                 selection[i - 1] = True
                             except:
-                                selection[2] = True
+                                selection[len(selection)-1] = True
                             finally:
                                 show = False
                                 fCount = 0
@@ -867,9 +1047,14 @@ while menu:
                     elif selection[1]:
                         difficulty = True
                         selection = [True, False, False, False]
+                    elif selection[2]:
+                        challenges = True
                     else:
                         options = False
                         selection = [True, False, False]
+                elif event.button == 12:
+                    options = False
+                    selection = [True, False, False]
 
         pygame.time.wait(15)
         pygame.display.flip()
@@ -964,7 +1149,7 @@ while menu:
                     # If player clicks in the back box then the snake menu will end
                     if pos[0] < 100 and pos[1] < 52 and inWindow:
                         snakes = False
-                        selection = [True, False, False]
+                        selection = [True, False, False, False]
                         current = 0
                     elif pos[0] <  3 * snakesize and pos[1] > height/2 - (3*snakesize)/2 and pos[1] < height/2 + (3*snakesize)/2 and inWindow:
                         rate = 0
@@ -1001,6 +1186,10 @@ while menu:
                         else:
                             displayText("LOCKED", red, centerScreen)
                             locked = True
+                    elif event.key == pygame.K_BACKSPACE:
+                        snakes = False
+                        selection = [True, False, False, False]
+                        current = 0
 
                 elif event.type == pygame.JOYBUTTONDOWN:
                     controller = True
@@ -1020,6 +1209,10 @@ while menu:
                         else:
                             displayText("LOCKED", red, centerScreen)
                             locked = True
+                    elif event.button == 12:
+                        snakes = False
+                        selection = [True, False, False, False]
+                        current = 0
 
             # Fast refresh rate if animation is running and slower more efficent refresh for non animation phase
             if rate < width/2 + 6 * snakesize:
@@ -1110,7 +1303,7 @@ while menu:
                                 try:
                                     selection[i - 1] = True
                                 except:
-                                    selection[3] = True
+                                    selection[len(selection) - 1] = True
                                 finally:
                                     show = False
                                     fCount = 0
@@ -1121,23 +1314,29 @@ while menu:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
                             gameSpeed = 75
+                            gameInfo["difficulty"] = "easy"
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         elif selection[1]:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
                             gameSpeed = 55
+                            gameInfo["difficulty"] = "moderate"
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         elif selection[2]:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
                             gameSpeed = 40
+                            gameInfo["difficulty"] = "hard"
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         else:
                             difficulty = False
-                            selection = [True, False, False]
+                            selection = [True, False, False, False]
+                    elif event.key == pygame.K_BACKSPACE:
+                        difficulty = False
+                        selection = [True, False, False, False]
 
                 # Checks for controller input
                 elif event.type == pygame.JOYBUTTONDOWN:
@@ -1186,25 +1385,66 @@ while menu:
                             pygame.time.wait(1000)
                         else:
                             difficulty = False
-                            selection = [True, False, False]
+                            selection = [True, False, False, False]
+                    elif event.button == 12:
+                        difficulty = False
+                        selection = [True, False, False, False]
+
+            pygame.time.wait(15)
+            pygame.display.flip()
+
+
+                                    ##################
+                                    # Challenge Menu #
+                                    ##################
+        while challenges:
+            screen.fill(white)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        quit()
+                    elif event.key == pygame.K_DOWN:
+                        pass
+                    elif event.key == pygame.K_UP:
+                        pass
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                        pass
+                    elif event.key == pygame.K_BACKSPACE:
+                        challenges = False
+                        selection = [True, False, False, False]
+
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 0:
+                        pass
+                    elif event.button == 1:
+                        pass
+                    elif event.button == 11:
+                        pass
+                    elif event.button == 13:
+                        challenges = False
+                        selection = [True, False, False, False]
+
 
             pygame.time.wait(15)
             pygame.display.flip()
 
 
 
-
-
-                                        ##################
-                                        # Main game loop #
-                                        ##################
-
+                            ##################
+                            # Main game loop #
+                            ##################
     while running:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    gameInfo["keysPressed"] += 1
+
                 if event.key == pygame.K_ESCAPE:
                     quit()
                 if event.key == pygame.K_UP:
@@ -1219,6 +1459,8 @@ while menu:
                 elif event.key == pygame.K_LEFT:
                     yVelocity = 0
                     xVelocity = -snakesize
+                elif event.key == pygame.K_p:
+                    pause()
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     yVelocity = -snakesize
@@ -1241,6 +1483,8 @@ while menu:
 
             # Checks for snake is eating the apple.
             if snakeBody[0].x == apples[i].x and snakeBody[0].y == apples[i].y:
+
+                gameInfo["totalApples"] += 1
 
                 score += 1
                 applecords = newApple()
@@ -1373,6 +1617,16 @@ while menu:
             pygame.display.flip()
             pygame.time.wait(gameSpeed)
 
+            gameInfo["distanceTraveled"] += .0001
+
+            if gameInfo["difficulty"] == "moderate":
+                gameInfo["timePlayed"] += int(gameSpeed * 1.8)
+            elif gameInfo["difficulty"] == "easy":
+                gameInfo["timePlayed"] += int(gameSpeed * 1.5)
+            elif gameInfo["difficulty"] == "hard":
+                gameInfo["timePlayed"] += int(gameSpeed * 2.1)
+
+
 
 
 
@@ -1390,6 +1644,7 @@ while menu:
             # Checks if the score is the new highscore
             if score > hs:
                 gameInfo["highscore"] = score
+                hs = score
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
