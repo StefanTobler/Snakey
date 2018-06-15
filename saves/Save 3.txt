@@ -1,8 +1,11 @@
-highscore = 0
-gamesPlayed = 0
-goldApples = 0
-avaliableSkins = default,classic,robo,golden
+highscore = 27
+gamesPlayed = 1
+goldApples = 1
+totalApples = 22
+avaliableSkins = default,classic,robo,worm,golden
 texture = default
+default = True
 classic = False
-robo = False
+robo = True
+worm = False
 golden = false
