@@ -1,182 +1,341 @@
 
-2018-05-23 01:33:42.456707
-
-2018-05-23 01:54:17.905684
-
-2018-05-23 18:10:24.420321
-
-2018-05-23 21:11:14.638644
-
-2018-05-23 21:11:47.309973
-
-2018-05-25 23:00:35.480591
-
-2018-05-25 23:44:57.837477
-
-2018-05-27 20:19:23.945782
-
-2018-06-01 09:22:36.238306
-
-2018-06-03 22:05:49.566898
-
-2018-06-03 22:06:43.781521
-
-2018-06-03 22:07:28.759476
-
-2018-06-03 22:09:05.138279
-
-2018-06-03 22:09:29.756047
-
-2018-06-05 21:53:29.641752
-
-2018-06-05 22:03:32.287772
-
-2018-06-06 12:10:31.819857
-
-2018-06-06 12:45:30.841472
-
-2018-06-06 12:46:07.084773
-
-2018-06-06 12:46:27.828870
-
-2018-06-06 12:47:56.575328
-
-2018-06-06 12:48:37.639611
-
-2018-06-06 12:49:31.673116
-
-2018-06-06 12:50:37.496542
-
-2018-06-06 12:50:55.936770
-
-2018-06-06 12:51:07.264522
-
-2018-06-06 12:51:17.357733
-
-2018-06-06 12:51:26.585485
-
-2018-06-06 12:51:35.968592
-
-2018-06-06 12:51:43.965843
-
-2018-06-06 12:51:57.386578
-
-2018-06-06 12:52:09.213401
-
-2018-06-06 14:23:53.164890
-
-2018-06-06 14:24:36.240063
-
-2018-06-06 14:31:32.204784
-
-2018-06-06 14:34:53.780888
-
-2018-06-06 15:47:01.935304
-
-2018-06-06 15:52:45.496579
-
-2018-06-06 15:53:20.845952
-
-2018-06-06 16:11:59.825039
-
-2018-06-06 16:14:32.811124
-
-2018-06-06 16:15:48.260227
-
-2018-06-06 16:16:28.741408
-
-2018-06-06 16:17:06.372872
-
-2018-06-06 16:18:18.721406
-
-2018-06-06 16:19:42.705202
-
-2018-06-06 16:20:00.232741
-
-2018-06-06 16:32:49.382571
-
-2018-06-06 16:33:43.114811
-
-2018-06-06 16:34:08.758867
-
-2018-06-06 16:46:04.021183
-
-2018-06-06 16:47:12.224455
-
-2018-06-06 16:49:18.433299
-
-2018-06-06 16:50:41.027728
-
-2018-06-06 16:51:11.516192
-
-2018-06-06 16:51:37.555357
-
-2018-06-06 16:53:30.079425
-
-2018-06-06 16:54:56.588034
-
-2018-06-06 16:55:15.141149
-
-2018-06-06 16:57:23.857499
-
-2018-06-06 17:01:16.233501
-
-2018-06-06 17:01:39.950893
-
-2018-06-06 17:04:04.421710
-
-2018-06-06 17:04:41.967334
-
-2018-06-06 17:05:22.498743
-
-2018-06-06 17:06:39.656504
-
-2018-06-06 17:08:04.157604
-
-2018-06-06 17:09:28.731778
-
-2018-06-06 17:17:44.522788
-
-2018-06-06 17:19:52.955196
-
-2018-06-06 17:20:04.736969
-
-2018-06-06 17:22:28.156787
-
-2018-06-06 17:31:14.120015
-
-2018-06-06 17:36:43.993212
-
-2018-06-06 17:36:50.755966
-
-2018-06-06 17:42:37.902157
-
-2018-06-06 20:33:02.071009
-
-2018-06-06 20:40:39.266789
-
-2018-06-06 20:43:28.967592
-
-2018-06-07 21:03:12.677256
-
-2018-06-07 21:03:58.468613
-
-2018-06-07 21:10:49.675350
-
-2018-06-07 21:15:29.730865
-
-2018-06-07 21:26:22.274946
-
-2018-06-07 21:36:34.026181
-
-2018-06-07 21:40:02.353685
-
-2018-06-07 21:41:58.927851
-
-2018-06-07 21:42:56.972285
-
-2018-06-07 21:43:26.509111
-
-2018-06-07 21:52:16.965466
-
-2018-06-07 21:52:52.109197
+2018-06-11 15:55:06.004327
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+BOMB BLIT ERROR: Texture not initalized
+
+2018-06-11 15:59:59.666434
+
+2018-06-11 18:04:23.073678
+
+2018-06-11 18:05:04.785231
+
+2018-06-11 18:05:42.246252
+
+2018-06-11 18:06:29.783569
+
+2018-06-11 18:11:23.175953
+
+2018-06-11 18:15:08.334421
+
+2018-06-11 18:31:45.725309
+
+2018-06-11 18:35:26.196579
+
+2018-06-11 18:35:37.907277
+
+2018-06-11 18:39:09.939491
+
+2018-06-11 19:00:12.596254
+
+2018-06-11 19:03:48.663337
+
+2018-06-11 19:04:19.483594
+
+2018-06-11 19:05:21.785184
+
+2018-06-11 19:07:40.982530
+
+2018-06-18 18:42:38.019092
+
+2018-06-18 18:53:28.934593
+
+2018-07-08 23:05:18.859919
+
+2018-07-13 14:36:38.705307
+
+2018-07-13 14:49:54.526101
+
+2018-07-13 14:50:23.961069
+
+2018-07-13 21:51:01.907085
+
+2018-07-15 18:10:07.564744
+
+2018-07-15 18:10:18.793312
+
+2018-07-15 18:12:15.013289
+
+2018-07-15 18:13:52.659768
