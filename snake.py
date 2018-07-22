@@ -42,6 +42,7 @@ snakesize = 50
 # Chance variables
 goldAppleChance = .01
 doubleChance = .1
+bombChance = .35
 
 # Number of ms in between each frame
 gameSpeed = 55
@@ -91,6 +92,11 @@ ay = applecords[1]
 apple = Body(ax, ay)
 apples = [apple]
 goldApple = []
+
+# Initalizes the bomb list
+bombs = []
+
+nearmiss = False
 
 # Initilizes the snake head
 sn = Body(x = width/2, y = height/2)
@@ -191,7 +197,7 @@ if pygame.joystick.get_count() >= 1:
 
 # Restarts all the game variables
 def restart():
-    global lost, score, snakeBody, xVelocity, yVelocity, goldApple, apples
+    global lost, score, snakeBody, xVelocity, yVelocity, goldApple, apples, bombs
     lost = False
     score = 0
     sn = Body(x=width / 2, y=height / 2)
@@ -202,10 +208,11 @@ def restart():
     goldApple = []
     apple = Body(cords[0], cords[1])
     apples = [apple]
+    bombs = []
 
 # Loads in game file
 def loadGame(file, seconds = 1):
-    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed
+    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance
     # Loads saves into a dictionary
     gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
@@ -213,6 +220,7 @@ def loadGame(file, seconds = 1):
         tempTup = line.strip().split(" = ")
         if tempTup[0] not in gameInfo:
             gameInfo[tempTup[0]] = tempTup[1]
+
 
     # Corrects variable types in the dictionary
     for key, value in gameInfo.items():
@@ -226,16 +234,17 @@ def loadGame(file, seconds = 1):
         except:
             pass
 
-        if value == "True":
+        if value.lower() == "true":
             gameInfo[key] = True
-        elif value == "False":
+        elif value.lower() == "false":
             gameInfo[key] = False
 
 
     # Creates a list of all the avaliable texture names
     skins = gameInfo["avaliableSkins"].split(",")
-    # skins = dict.fromkeys(keys)
 
+    # Creates a list of active challenges
+    activeChallenges = gameInfo["challenges"].split(",")
 
     # Imports the highscore
     hs = int(gameInfo["highscore"])
@@ -244,10 +253,7 @@ def loadGame(file, seconds = 1):
     gameOpen = file
 
     # Gets the set game difficulty
-    if gameInfo["difficulty"] == "hard":
-        gameSpeed = 40
-    elif gameInfo["difficulty"] == "easy":
-        gameSpeed = 75
+    updateDifficulty(gameInfo["difficulty"])
 
     # Runs the loading animation then sets the variables to their correct state so the game can move on
     # Wondering if nessary loading wont load on Mac OS
@@ -296,6 +302,10 @@ def updateAchievements():
     # Unlocks worm if player has collected over 250 apples
     if gameInfo["totalApples"] >= 250 and not gameInfo["worm"]:
         gameInfo["worm"] = True
+
+    # Unlocks error skin if player presses 1500 keys
+    if gameInfo["keysPressed"] >= 1500 and not gameInfo["error"]:
+        gameInfo["error"] = True
 
 # Returna a list of true and falses to use for when skin selection is in process
 def getSnakes():
@@ -389,7 +399,7 @@ def getSnakeOpt():
         # Format Line for the addition of future textures
         # Make sure each texture is added in the same order that it is added in the list on avaliableSkins
         # previewnamePreview = pygame.image.load("textures{}options{}snakes{}previewname.png".format(osType,osType,osType)).convert_alpha()
-        # previewnamePreview = pygame.transform.scale(previewname, (4*snakesize, 4*snakesize))
+        # previewnamePreview = pygame.transform.scale(previewnamePreview, (4*snakesize, 4*snakesize))
         # previewname = Skin(previewnamePreview, "Info", "Unlock")
         # skinPreviews.append(previewname)
 
@@ -412,6 +422,16 @@ def getSnakeOpt():
         wormPreview = pygame.transform.scale(wormPreview, (4*snakesize, 4*snakesize))
         worm = Skin(wormPreview, "Develops anus first", " Eat 250 apples")
         skinPreviews.append(worm)
+
+        goldenPreview = pygame.image.load("textures{}options{}snakes{}golden.png".format(osType,osType,osType)).convert_alpha()
+        goldenPreview = pygame.transform.scale(goldenPreview, (4*snakesize, 4*snakesize))
+        golden = Skin(goldenPreview, "24 karat", "Eat a golden apple")
+        skinPreviews.append(golden)
+
+        errorPreview = pygame.image.load("textures{}options{}snakes{}error.png".format(osType, osType, osType)).convert_alpha()
+        errorPreview = pygame.transform.scale(errorPreview, (4*snakesize, 4*snakesize))
+        error = Skin(errorPreview, "texture not found", "Press 1500 keys")
+        skinPreviews.append(error)
 
 # Position for skinPreviews list to display
 current = 0
@@ -467,7 +487,7 @@ def animate(direction, i):
         displayText("ERROR", red, centerScreen)
         error.write("ATTRIBUTE ERROR: Incorrect date type being blitted. MUST BE pygame surface check skin import\n")
 
-
+# When p is pressed while the game is running the game will be paused until the player presses the p key or the backspace key
 def pause():
     displayText("PAUSED", red, centerScreen, 85)
 
@@ -485,6 +505,32 @@ def pause():
                     quit()
                 elif event.key == pygame.K_p or event.key == pygame.K_BACKSPACE:
                     paused = False
+
+# Initalizes the textures for the challanges that are active
+def initChallenge(name):
+    global bomb
+    if name.lower() == "bomb":
+        bomb = pygame.image.load("textures{}challenges{}bombs{}bomb.png".format(osType,osType,osType)).convert_alpha()
+        bomb = pygame.transform.scale(bomb, (snakesize, snakesize))
+
+
+# Updates the difficulty of the game
+def updateDifficulty(difficulty):
+    global gameSpeed, bombChance
+    if difficulty == "easy":
+        gameSpeed = 75
+        bombChance = .2
+        gameInfo["difficulty"] = "easy"
+    elif difficulty == "moderate":
+        gameSpeed = 55
+        bombChance = .35
+        gameInfo["difficulty"] = "moderate"
+    elif difficulty == "hard":
+        gameSpeed = 40
+        bombChance = .5
+        gameInfo["difficulty"] = "hard"
+
+
 #
 
                                     ##################
@@ -628,7 +674,7 @@ saves.close()
 def initTextures():
     global head, headL, headR, headD, bendBL, bendBR ,bendTL, bendTR, tailD, tailL, tailR, tailU, gapple, appleTexture, bodyUD, bodyLR
     if gameOpen != None:
-        texturePath = "textures{}".format(osType)+ gameInfo["texture"]+ "{}".format(osType)
+        texturePath = "textures{}".format(osType) + "skins{}".format(osType) + gameInfo["texture"] + "{}".format(osType)
 
         ######################
         # Initalize Textures #
@@ -738,6 +784,9 @@ while menu:
                             break
             elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 if selection[0]:
+                    for i in activeChallenges:
+                        initChallenge(i)
+
                     gameInfo["gamesPlayed"] += 1
                     running = True
                 elif selection[1]:
@@ -867,17 +916,24 @@ while menu:
             hours = "0" + str(hours)
 
 
-        displayText("Time Played: " + str(hours) + ":" + str(minutes) + ":" + str(seconds), black, [centerScreen[0], centerScreen[1]-200], 35)
+        displayText("Time Played: " + str(hours) + ":" + str(minutes) + ":" + str(seconds), black, [centerScreen[0], centerScreen[1] - 200], 35)
 
         displayText("Games Played: " + str(gameInfo["gamesPlayed"]), black, [centerScreen[0], centerScreen[1] - 150], 35)
 
         displayText("Apples Eaten: " + str(gameInfo["totalApples"]), black, [centerScreen[0], centerScreen[1] - 100], 35)
 
-        displayText("Gold Apples Eaten: " + str(gameInfo["goldApples"]), black, [centerScreen[0], centerScreen[1] - 50], 35)
+        displayText("Apples Per Game: " + str(round(gameInfo["totalApples"]/gameInfo["gamesPlayed"],2)), black, [centerScreen[0], centerScreen[1] - 50], 35)
 
-        displayText("Distance Traveled: " + str(round(gameInfo["distanceTraveled"], 2)) + " kilometers", black, centerScreen, 35)
+        displayText("Gold Apples Eaten: " + str(gameInfo["goldApples"]), black, centerScreen, 35)
 
-        displayText("Keys Pressed: " + str(gameInfo["keysPressed"]), black, [centerScreen[0], centerScreen[1] + 50], 35)
+        displayText("Distance Traveled: " + str(round(gameInfo["distanceTraveled"], 2)) + " kilometers", black, [centerScreen[0], centerScreen[1] + 50], 35)
+
+        displayText("Keys Pressed: " + str(gameInfo["keysPressed"]), black, [centerScreen[0], centerScreen[1] + 100], 35)
+
+        displayText("Bombs Hit: " + str(gameInfo["bombsHit"]), black, [centerScreen[0], centerScreen[1] + 150], 35)
+
+        displayText("Near Misses: " + str(gameInfo["nearMisses"]), black, [centerScreen[0], centerScreen[1] + 200], 35)
+
 
         # Checks for mouse movement
         pos = pygame.mouse.get_pos()
@@ -1313,22 +1369,19 @@ while menu:
                         if selection[0]:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
-                            gameSpeed = 75
-                            gameInfo["difficulty"] = "easy"
+                            updateDifficulty("easy")
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         elif selection[1]:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
-                            gameSpeed = 55
-                            gameInfo["difficulty"] = "moderate"
+                            updateDifficulty("moderate")
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         elif selection[2]:
                             screen.fill(white)
                             displayText("Game Updated", red, centerScreen, 75)
-                            gameSpeed = 40
-                            gameInfo["difficulty"] = "hard"
+                            updateDifficulty("hard")
                             pygame.display.flip()
                             pygame.time.wait(1000)
                         else:
@@ -1400,6 +1453,8 @@ while menu:
         while challenges:
             screen.fill(white)
 
+            displayText("Challenges", black, [width / 2, 50])
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quit()
@@ -1426,6 +1481,9 @@ while menu:
                     elif event.button == 13:
                         challenges = False
                         selection = [True, False, False, False]
+
+            
+            displayText("Bombs - ", black, [centerScreen[0], centerScreen[1] - 200], 35)
 
 
             pygame.time.wait(15)
@@ -1517,6 +1575,12 @@ while menu:
                 if random.random() < goldAppleChance:
                     goldApple.append(newApple())
 
+                # Adds a bomb to the screen if the bomb challenge is selected
+                if "bomb" in activeChallenges:
+                    if random.random() < bombChance:
+                        temp = Body(newApple()[0], newApple()[1])
+                        bombs.append(temp)
+
             screen.blit(appleTexture, (apples[i].x, apples[i].y))
 
         # Draws Gold Apple
@@ -1532,6 +1596,28 @@ while menu:
                         increment += snakesize
                         snakeBody.append(snake)
                     goldApple.remove(pos)
+
+        # Blits th bombs to the screen and checks for collisions
+        if "bomb" in activeChallenges:
+            for i in range(len(bombs) - 1, -1, -1):
+                if snakeBody[0].x == bombs[i].x and snakeBody[0].y == bombs[i].y:
+                    lost = True
+                    gameInfo["bombsHit"] += 1
+
+                elif (abs(snakeBody[0].x - bombs[i].x) == snakesize and snakeBody[0].y == bombs[i].y) \
+                    or (abs(snakeBody[0].y - bombs[i].y) == snakesize  and snakeBody[0].x == bombs[i].x):
+                    if not nearmiss:
+                        nearmiss = True
+                    elif nearmiss and not lost:
+                        gameInfo["nearMisses"] += 1
+                    else:
+                        nearmiss = False
+
+
+                try:
+                    screen.blit(bomb, (bombs[i].x, bombs[i].y))
+                except:
+                    error.write("BOMB BLIT ERROR: Texture not initalized\n")
 
         # Update snake
         for i in range(len(snakeBody)-1, 0, -1):
@@ -1610,7 +1696,13 @@ while menu:
                     screen.blit(head, (snakeBody[i].x, snakeBody[i].y))
 
         # Checks for snake on snake collision
-        lost = checkCollision(snakeBody)
+        if not lost:
+            lost = checkCollision(snakeBody)
+
+        if lost:
+            if gameOpen != None:
+                updateAchievements()
+            saveGame(gameOpen)
 
         # Updates display
         if not lost:
