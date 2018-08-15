@@ -4,6 +4,7 @@ import time
 import os
 import sys
 import datetime
+
 pygame.init()
 
 # Checks the OS type to make sure that the paths are correct
@@ -13,6 +14,8 @@ if os.name == "posix":
     osType = "/"
 else:
     osType = "\\"
+
+
 # Window height and width
 width = 800
 height = 800
@@ -27,7 +30,7 @@ gold = (255, 215, 0)
 
 centerScreen = [width/2, height/2]
 
-# Initilizing the screen
+# Initializing the screen
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snakey")
 icon = pygame.image.load("icon.png")
@@ -244,7 +247,11 @@ def loadGame(file, seconds = 1):
     skins = gameInfo["avaliableSkins"].split(",")
 
     # Creates a list of active challenges
-    activeChallenges = gameInfo["challenges"].split(",")
+    activeChallenges = {}
+    tempActiveChallenges = gameInfo["challenges"].split()
+    for i in tempActiveChallenges:
+        temp = i.split(":")
+        activeChallenges[temp[0]] = bool(temp[0])
 
     # Imports the highscore
     hs = int(gameInfo["highscore"])
@@ -1452,8 +1459,13 @@ while menu:
                                     ##################
         while challenges:
             screen.fill(white)
-
             displayText("Challenges", black, [width / 2, 50])
+
+            tempDistance = 0
+            for key, value in activeChallenges.items():
+                displayText(key.title() + "-" + str(value), black, [width/2, 150 + tempDistance], 35)
+                tempDistance += 50
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1483,7 +1495,6 @@ while menu:
                         selection = [True, False, False, False]
 
             
-            displayText("Bombs - ", black, [centerScreen[0], centerScreen[1] - 200], 35)
 
 
             pygame.time.wait(15)
