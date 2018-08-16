@@ -197,6 +197,10 @@ if pygame.joystick.get_count() >= 1:
     for i in range(joysticks):
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
+#
+#
+#
+#
 
 # Restarts all the game variables
 def restart():
@@ -215,7 +219,7 @@ def restart():
 
 # Loads in game file
 def loadGame(file, seconds = 1):
-    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance
+    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance, challengeList
     # Loads saves into a dictionary
     gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
@@ -248,10 +252,22 @@ def loadGame(file, seconds = 1):
 
     # Creates a list of active challenges
     activeChallenges = {}
+    challengeList = []
     tempActiveChallenges = gameInfo["challenges"].split()
     for i in tempActiveChallenges:
+
         temp = i.split(":")
-        activeChallenges[temp[0]] = bool(temp[0])
+
+        challengeList.append(temp[0])
+
+        if temp[1] == "True":
+            temp[1] = True
+        elif temp[1] == "False":
+            temp[1] = False
+
+        activeChallenges[temp[0]] = temp[1]
+
+    challengeList.append("Back")
 
     # Imports the highscore
     hs = int(gameInfo["highscore"])
@@ -1070,6 +1086,8 @@ while menu:
                         difficulty = True
                         selection = [True, False, False, False]
                     elif selection[2]:
+                        selection = 0
+                        fCount = 0
                         challenges = True
                     else:
                         options = False
@@ -1371,6 +1389,7 @@ while menu:
                                     show = False
                                     fCount = 0
                                     break
+
                     # Returns "Game Updated" on the screen and changes the delay per frame
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if selection[0]:
@@ -1461,11 +1480,27 @@ while menu:
             screen.fill(white)
             displayText("Challenges", black, [width / 2, 50])
 
+            fCount += 1
+            if fCount % 10 == 0:
+                if show:
+                    show = False
+                else:
+                    show = True
+
             tempDistance = 0
             for key, value in activeChallenges.items():
-                displayText(key.title() + "-" + str(value), black, [width/2, 150 + tempDistance], 35)
+                if key == challengeList[selection]:
+                    if show:
+                        displayText(key.title() + " : " + str(value), black, [width / 2, 150 + tempDistance], 35)
+                else:
+                    displayText(key.title() + " : " + str(value), black, [width/2, 150 + tempDistance], 35)
                 tempDistance += 50
 
+            if challengeList[selection] == "Back":
+                if show:
+                    displayText("Back", black, [width/2, 150 + tempDistance], 35)
+            else:
+                displayText("Back", black, [width / 2, 150 + tempDistance], 35)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1474,13 +1509,33 @@ while menu:
                     if event.key == pygame.K_ESCAPE:
                         quit()
                     elif event.key == pygame.K_DOWN:
-                        pass
+                        # Moves the index of selection up one
+                        if selection < len(challengeList):
+                            selection += 1
+                        else:
+                            selection = 0
+
+                        fCount = 0
+
                     elif event.key == pygame.K_UP:
-                        pass
+                        # Moves the selection of the index down one
+                        if selection > 0:
+                            selection -= 1
+                        else:
+                            selection = len(challengeList) - 1
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        pass
+                        if challengeList[selection] == "Back":
+                            challenges = False
+                            fCount = 0
+                            selection = [True, False, False, False]
+                        else:
+                            if activeChallenges[challengeList[selection]]:
+                                activeChallenges[challengeList[selection]] = False
+                            else:
+                                activeChallenges[challengeList[selection]] = True
                     elif event.key == pygame.K_BACKSPACE:
                         challenges = False
+                        fCount = 0
                         selection = [True, False, False, False]
 
                 elif event.type == pygame.JOYBUTTONDOWN:
@@ -1492,9 +1547,10 @@ while menu:
                         pass
                     elif event.button == 13:
                         challenges = False
+                        fCount = 0
                         selection = [True, False, False, False]
 
-            
+
 
 
             pygame.time.wait(15)
