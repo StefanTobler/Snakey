@@ -73,9 +73,25 @@ class Body():
 
 # Randomly generated a new apple cords.
 def newApple():
-    global width, height
-    ax = random.randrange(0, width, snakesize)
-    ay = random.randrange(0, height, snakesize)
+    global width, height, activeChallenges
+
+    # Creates new coordinates if there are walls.
+    if activeChallenges["walls"] or ((activeChallenges["Top-Bottom-Walls"] and activeChallenges["Side-Walls"])):
+        ax = random.randrange(snakesize, width - snakesize, snakesize)
+        ay = random.randrange(snakesize, height - snakesize, snakesize)
+
+    elif activeChallenges["Top-Bottom-Walls"]:
+        ax = random.randrange(0, width, snakesize)
+        ay = random.randrange(snakesize, height - snakesize, snakesize)
+
+    elif activeChallenges["Side-Walls"]:
+        ax = random.randrange(snakesize, width - snakesize, snakesize)
+        ay = random.randrange(0, height, snakesize)
+
+    else:
+        ax = random.randrange(0, width, snakesize)
+        ay = random.randrange(0, height, snakesize)
+
     for part in snakeBody:
         if part.x == ax and part.y == ay:
             newApple()
@@ -86,11 +102,11 @@ error = open("Read Me{}error log.txt".format(osType), "a")
 date = str(datetime.datetime.now())
 error.write("\n" + date + "\n")
 
-# Initilizes the first apple
-applecords = newApple()
+# Place holder cords, before each game the restart() method is ran.
+applecords = []
 
-ax = applecords[0]
-ay = applecords[1]
+ax = 0
+ay = 0
 
 apple = Body(ax, ay)
 apples = [apple]
@@ -530,9 +546,9 @@ def pause():
                     paused = False
 
 # Initalizes the textures for the challanges that are active
-def initChallenge(name):
-    global bomb
-    if name.lower() == "bomb":
+def initChallenge():
+    global bomb, activeChallenges
+    if activeChallenges["bombs"]:
         bomb = pygame.image.load("textures{}challenges{}bombs{}bomb.png".format(osType,osType,osType)).convert_alpha()
         bomb = pygame.transform.scale(bomb, (snakesize, snakesize))
 
@@ -807,11 +823,11 @@ while menu:
                             break
             elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 if selection[0]:
-                    for i in activeChallenges:
-                        initChallenge(i)
+                    initChallenge()
 
                     gameInfo["gamesPlayed"] += 1
                     running = True
+                    restart()
                 elif selection[1]:
                     options = True
                     selection = [True, False, False, False]
@@ -1480,6 +1496,7 @@ while menu:
             screen.fill(white)
             displayText("Challenges", black, [width / 2, 50])
 
+            # Frame count to enable blinking text
             fCount += 1
             if fCount % 10 == 0:
                 if show:
@@ -1487,6 +1504,7 @@ while menu:
                 else:
                     show = True
 
+            # Adds the avaliable challengses to the screen.
             tempDistance = 0
             for key, value in activeChallenges.items():
                 if key == challengeList[selection]:
@@ -1496,6 +1514,7 @@ while menu:
                     displayText(key.title() + " : " + str(value), black, [width/2, 150 + tempDistance], 35)
                 tempDistance += 50
 
+            # Checks to see if the option is "Back" so that the player is taken back to the options menu
             if challengeList[selection] == "Back":
                 if show:
                     displayText("Back", black, [width/2, 150 + tempDistance], 35)
@@ -1525,6 +1544,13 @@ while menu:
                             selection = len(challengeList) - 1
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if challengeList[selection] == "Back":
+                            # Updates gameInfo so that the active challenges are saved
+                            temp = ""
+                            for key, value in activeChallenges.items():
+                                temp += key + ":" + str(value) + " "
+
+                            gameInfo["challenges"] = temp
+
                             challenges = False
                             fCount = 0
                             selection = [True, False, False, False]
@@ -1534,6 +1560,13 @@ while menu:
                             else:
                                 activeChallenges[challengeList[selection]] = True
                     elif event.key == pygame.K_BACKSPACE:
+                        # Updates gameInfo so that the active challenges are saved
+                        temp = ""
+                        for key,value in activeChallenges.items():
+                            temp += key + ":" + str(value) + " "
+
+                        gameInfo["challenges"] = temp
+
                         challenges = False
                         fCount = 0
                         selection = [True, False, False, False]
@@ -1546,6 +1579,13 @@ while menu:
                     elif event.button == 11:
                         pass
                     elif event.button == 13:
+                        # Updates gameInfo so that the active challenges are saved
+                        temp = ""
+                        for key, value in activeChallenges.items():
+                            temp += key + ":" + str(value) + " "
+
+                        gameInfo["challenges"] = temp
+
                         challenges = False
                         fCount = 0
                         selection = [True, False, False, False]
@@ -1603,6 +1643,7 @@ while menu:
         screen.fill(white)
 
         displayText(str(score), (211, 211, 211), centerScreen, int((width + height)/2 * .35))
+
         # Draws the apples
         for i in range(len(apples) - 1, -1, -1):
 
@@ -1634,16 +1675,18 @@ while menu:
                     apples.remove(apples[i])
                     continue
 
+                # Algorithm to see if two apples show up.
                 if random.random() < doubleChance:
                     a = Body(newApple()[0], newApple()[1])
                     apples.append(a)
                     screen.blit(appleTexture, (apples[-1].x, apples[-1].y))
 
+                # Algorithm to see if a golden apple will appear.
                 if random.random() < goldAppleChance:
                     goldApple.append(newApple())
 
                 # Adds a bomb to the screen if the bomb challenge is selected
-                if "bomb" in activeChallenges:
+                if activeChallenges["bombs"]:
                     if random.random() < bombChance:
                         temp = Body(newApple()[0], newApple()[1])
                         bombs.append(temp)
@@ -1665,7 +1708,7 @@ while menu:
                     goldApple.remove(pos)
 
         # Blits th bombs to the screen and checks for collisions
-        if "bomb" in activeChallenges:
+        if activeChallenges['bombs']:
             for i in range(len(bombs) - 1, -1, -1):
                 if snakeBody[0].x == bombs[i].x and snakeBody[0].y == bombs[i].y:
                     lost = True
@@ -1680,7 +1723,7 @@ while menu:
                     else:
                         nearmiss = False
 
-
+                # Puts the texture on the screen. If it fails there will be a log in the error log.
                 try:
                     screen.blit(bomb, (bombs[i].x, bombs[i].y))
                 except:
@@ -1694,15 +1737,62 @@ while menu:
         snakeBody[0].x += xVelocity
         snakeBody[0].y += yVelocity
 
-        for i in snakeBody:
-            if i.x < 0:
-                i.x = width - snakesize
-            elif i.x >= width:
-                i.x = 0
-            if i.y < 0:
-                i.y = height - snakesize
-            elif i.y >= height:
-                i.y = 0
+        # Checks to see if walls are active and then draws them and reworks the bounds so that if the snake
+        # runs into a wall the gane ends
+        if activeChallenges["walls"] or (activeChallenges["Top-Bottom-Walls"] and activeChallenges["Side-Walls"]):
+            pygame.draw.rect(screen, black, (0, 0, width, snakesize))
+            pygame.draw.rect(screen, black, (width - snakesize, 0, snakesize, height))
+            pygame.draw.rect(screen, black, (0, 0, snakesize, height))
+            pygame.draw.rect(screen, black, (0, height - snakesize, width, snakesize))
+
+            for i in snakeBody:
+                if i.x < snakesize:
+                    lost = True
+                elif i.x >= width - snakesize:
+                    lost = True
+                if i.y < snakesize:
+                    lost = True
+                elif i.y >= height - snakesize:
+                    lost = True
+
+        elif activeChallenges["Top-Bottom-Walls"]:
+            pygame.draw.rect(screen, black,(0, 0, width, snakesize))
+            pygame.draw.rect(screen, black,(0, height- snakesize, width, snakesize))
+
+            for i in snakeBody:
+                if i.x < 0:
+                    i.x = width - snakesize
+                elif i.x >= width:
+                    i.x = 0
+                if i.y < snakesize:
+                    lost = True
+                elif i.y >= height - snakesize:
+                    lost = True
+
+        elif activeChallenges["Side-Walls"]:
+            pygame.draw.rect(screen, black, (0,0, snakesize, height))
+            pygame.draw.rect(screen, black, (width - snakesize, 0, snakesize, height))
+
+            for i in snakeBody:
+                if i.x < snakesize:
+                    lost = True
+                elif i.x >= width - snakesize:
+                    lost = True
+                if i.y < 0:
+                    i.y = height - snakesize
+                elif i.y >= height:
+                    i.y = 0
+
+        else:
+            for i in snakeBody:
+                if i.x < 0:
+                    i.x = width - snakesize
+                elif i.x >= width:
+                    i.x = 0
+                if i.y < 0:
+                    i.y = height - snakesize
+                elif i.y >= height:
+                    i.y = 0
 
         # Draws the snake
         for i in range(len(snakeBody)-1, -1, -1):
@@ -1824,6 +1914,7 @@ if gameOpen != None:
     updateAchievements()
 saveGame(gameOpen)
 error.close()
+
 # When all loops are exited game quits
 pygame.quit()
 os._exit(1)
