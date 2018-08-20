@@ -17,7 +17,7 @@ else:
 
 
 # Window height and width
-width = 800
+width = 1000
 height = 800
 
 # Making some color variables so that they are easy to call
@@ -76,15 +76,15 @@ def newApple():
     global width, height, activeChallenges
 
     # Creates new coordinates if there are walls.
-    if activeChallenges["walls"] or ((activeChallenges["Top-Bottom-Walls"] and activeChallenges["Side-Walls"])):
+    if activeChallenges["walls"] or ((activeChallenges["Top Bottom Walls"] and activeChallenges["Side Walls"])):
         ax = random.randrange(snakesize, width - snakesize, snakesize)
         ay = random.randrange(snakesize, height - snakesize, snakesize)
 
-    elif activeChallenges["Top-Bottom-Walls"]:
+    elif activeChallenges["Top Bottom Walls"]:
         ax = random.randrange(0, width, snakesize)
         ay = random.randrange(snakesize, height - snakesize, snakesize)
 
-    elif activeChallenges["Side-Walls"]:
+    elif activeChallenges["Side Walls"]:
         ax = random.randrange(snakesize, width - snakesize, snakesize)
         ay = random.randrange(0, height, snakesize)
 
@@ -269,7 +269,7 @@ def loadGame(file, seconds = 1):
     # Creates a list of active challenges
     activeChallenges = {}
     challengeList = []
-    tempActiveChallenges = gameInfo["challenges"].split()
+    tempActiveChallenges = gameInfo["challenges"].split(" ; ")
     for i in tempActiveChallenges:
 
         temp = i.split(":")
@@ -547,10 +547,13 @@ def pause():
 
 # Initalizes the textures for the challanges that are active
 def initChallenge():
-    global bomb, activeChallenges
+    global activeChallenge, brickWall, bomb
     if activeChallenges["bombs"]:
         bomb = pygame.image.load("textures{}challenges{}bombs{}bomb.png".format(osType,osType,osType)).convert_alpha()
         bomb = pygame.transform.scale(bomb, (snakesize, snakesize))
+    if activeChallenges["Top Bottom Walls"] or activeChallenges["Side Walls"] or activeChallenges["walls"]:
+        brickWall = pygame.image.load("textures{}challenges{}walls{}brick.jpeg".format(osType, osType, osType)).convert_alpha()
+        brickWall = pygame.transform.scale(brickWall, (snakesize, snakesize))
 
 
 # Updates the difficulty of the game
@@ -1547,7 +1550,7 @@ while menu:
                             # Updates gameInfo so that the active challenges are saved
                             temp = ""
                             for key, value in activeChallenges.items():
-                                temp += key + ":" + str(value) + " "
+                                temp += key + ":" + str(value) + " ; "
 
                             gameInfo["challenges"] = temp
 
@@ -1563,7 +1566,7 @@ while menu:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
                         for key,value in activeChallenges.items():
-                            temp += key + ":" + str(value) + " "
+                            temp += key + ":" + str(value) + " ; "
 
                         gameInfo["challenges"] = temp
 
@@ -1582,7 +1585,7 @@ while menu:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
                         for key, value in activeChallenges.items():
-                            temp += key + ":" + str(value) + " "
+                            temp += key + ":" + str(value) + " ; "
 
                         gameInfo["challenges"] = temp
 
@@ -1739,11 +1742,16 @@ while menu:
 
         # Checks to see if walls are active and then draws them and reworks the bounds so that if the snake
         # runs into a wall the gane ends
-        if activeChallenges["walls"] or (activeChallenges["Top-Bottom-Walls"] and activeChallenges["Side-Walls"]):
-            pygame.draw.rect(screen, black, (0, 0, width, snakesize))
-            pygame.draw.rect(screen, black, (width - snakesize, 0, snakesize, height))
-            pygame.draw.rect(screen, black, (0, 0, snakesize, height))
-            pygame.draw.rect(screen, black, (0, height - snakesize, width, snakesize))
+        if activeChallenges["walls"] or (activeChallenges["Top Bottom Walls"] and activeChallenges["Side Walls"]):
+
+            # Blits the brick wall textures to the screen.
+            for cordIncrement in range(0, height, snakesize):
+                screen.blit(brickWall, (0, cordIncrement))
+                screen.blit(brickWall, (width - snakesize, cordIncrement))
+
+            for cordIncrement in range(0, width, snakesize):
+                screen.blit(brickWall, (cordIncrement, 0))
+                screen.blit(brickWall, (cordIncrement, height - snakesize))
 
             for i in snakeBody:
                 if i.x < snakesize:
@@ -1755,9 +1763,10 @@ while menu:
                 elif i.y >= height - snakesize:
                     lost = True
 
-        elif activeChallenges["Top-Bottom-Walls"]:
-            pygame.draw.rect(screen, black,(0, 0, width, snakesize))
-            pygame.draw.rect(screen, black,(0, height- snakesize, width, snakesize))
+        elif activeChallenges["Top Bottom Walls"]:
+            for cordIncrement in range(0, width, snakesize):
+                screen.blit(brickWall, (cordIncrement, 0))
+                screen.blit(brickWall, (cordIncrement, height - snakesize))
 
             for i in snakeBody:
                 if i.x < 0:
@@ -1769,9 +1778,11 @@ while menu:
                 elif i.y >= height - snakesize:
                     lost = True
 
-        elif activeChallenges["Side-Walls"]:
-            pygame.draw.rect(screen, black, (0,0, snakesize, height))
-            pygame.draw.rect(screen, black, (width - snakesize, 0, snakesize, height))
+        elif activeChallenges["Side Walls"]:
+            for cordIncrement in range(0, height, snakesize):
+                screen.blit(brickWall, (0, cordIncrement))
+                screen.blit(brickWall, (width - snakesize, cordIncrement))
+
 
             for i in snakeBody:
                 if i.x < snakesize:
