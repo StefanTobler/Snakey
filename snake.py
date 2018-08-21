@@ -17,7 +17,7 @@ else:
 
 
 # Window height and width
-width = 800
+width = 1000
 height = 800
 
 # Making some color variables so that they are easy to call
@@ -73,9 +73,25 @@ class Body():
 
 # Randomly generated a new apple cords.
 def newApple():
-    global width, height
-    ax = random.randrange(0, width, snakesize)
-    ay = random.randrange(0, height, snakesize)
+    global width, height, activeChallenges
+
+    # Creates new coordinates if there are walls.
+    if activeChallenges["walls"] or ((activeChallenges["Top Bottom Walls"] and activeChallenges["Side Walls"])):
+        ax = random.randrange(snakesize, width - snakesize, snakesize)
+        ay = random.randrange(snakesize, height - snakesize, snakesize)
+
+    elif activeChallenges["Top Bottom Walls"]:
+        ax = random.randrange(0, width, snakesize)
+        ay = random.randrange(snakesize, height - snakesize, snakesize)
+
+    elif activeChallenges["Side Walls"]:
+        ax = random.randrange(snakesize, width - snakesize, snakesize)
+        ay = random.randrange(0, height, snakesize)
+
+    else:
+        ax = random.randrange(0, width, snakesize)
+        ay = random.randrange(0, height, snakesize)
+
     for part in snakeBody:
         if part.x == ax and part.y == ay:
             newApple()
@@ -86,11 +102,11 @@ error = open("Read Me{}error log.txt".format(osType), "a")
 date = str(datetime.datetime.now())
 error.write("\n" + date + "\n")
 
-# Initilizes the first apple
-applecords = newApple()
+# Place holder cords, before each game the restart() method is ran.
+applecords = []
 
-ax = applecords[0]
-ay = applecords[1]
+ax = 0
+ay = 0
 
 apple = Body(ax, ay)
 apples = [apple]
@@ -197,6 +213,10 @@ if pygame.joystick.get_count() >= 1:
     for i in range(joysticks):
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
+#
+#
+#
+#
 
 # Restarts all the game variables
 def restart():
@@ -215,7 +235,7 @@ def restart():
 
 # Loads in game file
 def loadGame(file, seconds = 1):
-    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance
+    global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance, challengeList
     # Loads saves into a dictionary
     gameSave = open("saves{}".format(osType) + file + ".txt", "r")
 
@@ -248,10 +268,22 @@ def loadGame(file, seconds = 1):
 
     # Creates a list of active challenges
     activeChallenges = {}
-    tempActiveChallenges = gameInfo["challenges"].split()
+    challengeList = []
+    tempActiveChallenges = gameInfo["challenges"].split(" ; ")
     for i in tempActiveChallenges:
+
         temp = i.split(":")
-        activeChallenges[temp[0]] = bool(temp[0])
+
+        challengeList.append(temp[0])
+
+        if temp[1] == "True":
+            temp[1] = True
+        elif temp[1] == "False":
+            temp[1] = False
+
+        activeChallenges[temp[0]] = temp[1]
+
+    challengeList.append("Back")
 
     # Imports the highscore
     hs = int(gameInfo["highscore"])
@@ -514,11 +546,14 @@ def pause():
                     paused = False
 
 # Initalizes the textures for the challanges that are active
-def initChallenge(name):
-    global bomb
-    if name.lower() == "bomb":
+def initChallenge():
+    global activeChallenge, brickWall, bomb
+    if activeChallenges["bombs"]:
         bomb = pygame.image.load("textures{}challenges{}bombs{}bomb.png".format(osType,osType,osType)).convert_alpha()
         bomb = pygame.transform.scale(bomb, (snakesize, snakesize))
+    if activeChallenges["Top Bottom Walls"] or activeChallenges["Side Walls"] or activeChallenges["walls"]:
+        brickWall = pygame.image.load("textures{}challenges{}walls{}brick.jpeg".format(osType, osType, osType)).convert_alpha()
+        brickWall = pygame.transform.scale(brickWall, (snakesize, snakesize))
 
 
 # Updates the difficulty of the game
@@ -791,11 +826,11 @@ while menu:
                             break
             elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 if selection[0]:
-                    for i in activeChallenges:
-                        initChallenge(i)
+                    initChallenge()
 
                     gameInfo["gamesPlayed"] += 1
                     running = True
+                    restart()
                 elif selection[1]:
                     options = True
                     selection = [True, False, False, False]
@@ -1070,6 +1105,8 @@ while menu:
                         difficulty = True
                         selection = [True, False, False, False]
                     elif selection[2]:
+                        selection = 0
+                        fCount = 0
                         challenges = True
                     else:
                         options = False
@@ -1371,6 +1408,7 @@ while menu:
                                     show = False
                                     fCount = 0
                                     break
+
                     # Returns "Game Updated" on the screen and changes the delay per frame
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if selection[0]:
@@ -1461,11 +1499,30 @@ while menu:
             screen.fill(white)
             displayText("Challenges", black, [width / 2, 50])
 
+            # Frame count to enable blinking text
+            fCount += 1
+            if fCount % 10 == 0:
+                if show:
+                    show = False
+                else:
+                    show = True
+
+            # Adds the avaliable challengses to the screen.
             tempDistance = 0
             for key, value in activeChallenges.items():
-                displayText(key.title() + "-" + str(value), black, [width/2, 150 + tempDistance], 35)
+                if key == challengeList[selection]:
+                    if show:
+                        displayText(key.title() + " : " + str(value), black, [width / 2, 150 + tempDistance], 35)
+                else:
+                    displayText(key.title() + " : " + str(value), black, [width/2, 150 + tempDistance], 35)
                 tempDistance += 50
 
+            # Checks to see if the option is "Back" so that the player is taken back to the options menu
+            if challengeList[selection] == "Back":
+                if show:
+                    displayText("Back", black, [width/2, 150 + tempDistance], 35)
+            else:
+                displayText("Back", black, [width / 2, 150 + tempDistance], 35)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1474,13 +1531,47 @@ while menu:
                     if event.key == pygame.K_ESCAPE:
                         quit()
                     elif event.key == pygame.K_DOWN:
-                        pass
+                        # Moves the index of selection up one
+                        if selection < len(challengeList):
+                            selection += 1
+                        else:
+                            selection = 0
+
+                        fCount = 0
+
                     elif event.key == pygame.K_UP:
-                        pass
+                        # Moves the selection of the index down one
+                        if selection > 0:
+                            selection -= 1
+                        else:
+                            selection = len(challengeList) - 1
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        pass
+                        if challengeList[selection] == "Back":
+                            # Updates gameInfo so that the active challenges are saved
+                            temp = ""
+                            for key, value in activeChallenges.items():
+                                temp += key + ":" + str(value) + " ; "
+
+                            gameInfo["challenges"] = temp
+
+                            challenges = False
+                            fCount = 0
+                            selection = [True, False, False, False]
+                        else:
+                            if activeChallenges[challengeList[selection]]:
+                                activeChallenges[challengeList[selection]] = False
+                            else:
+                                activeChallenges[challengeList[selection]] = True
                     elif event.key == pygame.K_BACKSPACE:
+                        # Updates gameInfo so that the active challenges are saved
+                        temp = ""
+                        for key,value in activeChallenges.items():
+                            temp += key + ":" + str(value) + " ; "
+
+                        gameInfo["challenges"] = temp
+
                         challenges = False
+                        fCount = 0
                         selection = [True, False, False, False]
 
                 elif event.type == pygame.JOYBUTTONDOWN:
@@ -1491,10 +1582,18 @@ while menu:
                     elif event.button == 11:
                         pass
                     elif event.button == 13:
+                        # Updates gameInfo so that the active challenges are saved
+                        temp = ""
+                        for key, value in activeChallenges.items():
+                            temp += key + ":" + str(value) + " ; "
+
+                        gameInfo["challenges"] = temp
+
                         challenges = False
+                        fCount = 0
                         selection = [True, False, False, False]
 
-            
+
 
 
             pygame.time.wait(15)
@@ -1547,6 +1646,7 @@ while menu:
         screen.fill(white)
 
         displayText(str(score), (211, 211, 211), centerScreen, int((width + height)/2 * .35))
+
         # Draws the apples
         for i in range(len(apples) - 1, -1, -1):
 
@@ -1578,16 +1678,18 @@ while menu:
                     apples.remove(apples[i])
                     continue
 
+                # Algorithm to see if two apples show up.
                 if random.random() < doubleChance:
                     a = Body(newApple()[0], newApple()[1])
                     apples.append(a)
                     screen.blit(appleTexture, (apples[-1].x, apples[-1].y))
 
+                # Algorithm to see if a golden apple will appear.
                 if random.random() < goldAppleChance:
                     goldApple.append(newApple())
 
                 # Adds a bomb to the screen if the bomb challenge is selected
-                if "bomb" in activeChallenges:
+                if activeChallenges["bombs"]:
                     if random.random() < bombChance:
                         temp = Body(newApple()[0], newApple()[1])
                         bombs.append(temp)
@@ -1609,7 +1711,7 @@ while menu:
                     goldApple.remove(pos)
 
         # Blits th bombs to the screen and checks for collisions
-        if "bomb" in activeChallenges:
+        if activeChallenges['bombs']:
             for i in range(len(bombs) - 1, -1, -1):
                 if snakeBody[0].x == bombs[i].x and snakeBody[0].y == bombs[i].y:
                     lost = True
@@ -1624,7 +1726,7 @@ while menu:
                     else:
                         nearmiss = False
 
-
+                # Puts the texture on the screen. If it fails there will be a log in the error log.
                 try:
                     screen.blit(bomb, (bombs[i].x, bombs[i].y))
                 except:
@@ -1638,15 +1740,70 @@ while menu:
         snakeBody[0].x += xVelocity
         snakeBody[0].y += yVelocity
 
-        for i in snakeBody:
-            if i.x < 0:
-                i.x = width - snakesize
-            elif i.x >= width:
-                i.x = 0
-            if i.y < 0:
-                i.y = height - snakesize
-            elif i.y >= height:
-                i.y = 0
+        # Checks to see if walls are active and then draws them and reworks the bounds so that if the snake
+        # runs into a wall the gane ends
+        if activeChallenges["walls"] or (activeChallenges["Top Bottom Walls"] and activeChallenges["Side Walls"]):
+
+            # Blits the brick wall textures to the screen.
+            for cordIncrement in range(0, height, snakesize):
+                screen.blit(brickWall, (0, cordIncrement))
+                screen.blit(brickWall, (width - snakesize, cordIncrement))
+
+            for cordIncrement in range(0, width, snakesize):
+                screen.blit(brickWall, (cordIncrement, 0))
+                screen.blit(brickWall, (cordIncrement, height - snakesize))
+
+            for i in snakeBody:
+                if i.x < snakesize:
+                    lost = True
+                elif i.x >= width - snakesize:
+                    lost = True
+                if i.y < snakesize:
+                    lost = True
+                elif i.y >= height - snakesize:
+                    lost = True
+
+        elif activeChallenges["Top Bottom Walls"]:
+            for cordIncrement in range(0, width, snakesize):
+                screen.blit(brickWall, (cordIncrement, 0))
+                screen.blit(brickWall, (cordIncrement, height - snakesize))
+
+            for i in snakeBody:
+                if i.x < 0:
+                    i.x = width - snakesize
+                elif i.x >= width:
+                    i.x = 0
+                if i.y < snakesize:
+                    lost = True
+                elif i.y >= height - snakesize:
+                    lost = True
+
+        elif activeChallenges["Side Walls"]:
+            for cordIncrement in range(0, height, snakesize):
+                screen.blit(brickWall, (0, cordIncrement))
+                screen.blit(brickWall, (width - snakesize, cordIncrement))
+
+
+            for i in snakeBody:
+                if i.x < snakesize:
+                    lost = True
+                elif i.x >= width - snakesize:
+                    lost = True
+                if i.y < 0:
+                    i.y = height - snakesize
+                elif i.y >= height:
+                    i.y = 0
+
+        else:
+            for i in snakeBody:
+                if i.x < 0:
+                    i.x = width - snakesize
+                elif i.x >= width:
+                    i.x = 0
+                if i.y < 0:
+                    i.y = height - snakesize
+                elif i.y >= height:
+                    i.y = 0
 
         # Draws the snake
         for i in range(len(snakeBody)-1, -1, -1):
@@ -1768,6 +1925,7 @@ if gameOpen != None:
     updateAchievements()
 saveGame(gameOpen)
 error.close()
+
 # When all loops are exited game quits
 pygame.quit()
 os._exit(1)
