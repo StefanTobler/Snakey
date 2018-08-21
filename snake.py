@@ -98,7 +98,7 @@ def newApple():
     return (ax, ay)
 
 # Opens error file so that if inconsistencies are found they will be printed to a log
-error = open("Read Me{}error log.txt".format(osType), "a")
+error = open("README{}error log.txt".format(osType), "a")
 date = str(datetime.datetime.now())
 error.write("\n" + date + "\n")
 
@@ -1540,11 +1540,15 @@ while menu:
                         fCount = 0
 
                     elif event.key == pygame.K_UP:
+
                         # Moves the selection of the index down one
                         if selection > 0:
                             selection -= 1
                         else:
                             selection = len(challengeList) - 1
+
+                        fCount = 0
+
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if challengeList[selection] == "Back":
                             # Updates gameInfo so that the active challenges are saved
@@ -1576,12 +1580,56 @@ while menu:
 
                 elif event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 0:
-                        pass
+
+                        # Moves the selection of the index down one
+                        if selection > 0:
+                            selection -= 1
+                        else:
+                            selection = len(challengeList) - 1
+
+                        fCount = 0
+
                     elif event.button == 1:
-                        pass
+
+                        # Moves the index of selection up one
+                        if selection < len(challengeList):
+                            selection += 1
+                        else:
+                            selection = 0
+
+                        fCount = 0
+
                     elif event.button == 11:
-                        pass
-                    elif event.button == 13:
+
+                        if challengeList[selection] == "Back":
+                            # Updates gameInfo so that the active challenges are saved
+                            temp = ""
+                            for key, value in activeChallenges.items():
+                                temp += key + ":" + str(value) + " ; "
+
+                            gameInfo["challenges"] = temp
+
+                            challenges = False
+                            fCount = 0
+                            selection = [True, False, False, False]
+                        else:
+                            if activeChallenges[challengeList[selection]]:
+                                activeChallenges[challengeList[selection]] = False
+                            else:
+                                activeChallenges[challengeList[selection]] = True
+                    elif event.key == pygame.K_BACKSPACE:
+                        # Updates gameInfo so that the active challenges are saved
+                        temp = ""
+                        for key, value in activeChallenges.items():
+                            temp += key + ":" + str(value) + " ; "
+
+                        gameInfo["challenges"] = temp
+
+                        challenges = False
+                        fCount = 0
+                        selection = [True, False, False, False]
+
+                    elif event.button == 12:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
                         for key, value in activeChallenges.items():
@@ -1629,6 +1677,7 @@ while menu:
                     xVelocity = -snakesize
                 elif event.key == pygame.K_p:
                     pause()
+
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
                     yVelocity = -snakesize
@@ -1705,7 +1754,7 @@ while menu:
                     increment = 0
                     score += 5
                     for i in range(5):
-                        snake = Body(x=increment, y=height - 1)
+                        snake = Body(x= -(8 * snakesize) + increment, y=height - 1)
                         increment += snakesize
                         snakeBody.append(snake)
                     goldApple.remove(pos)
@@ -1740,6 +1789,7 @@ while menu:
         snakeBody[0].x += xVelocity
         snakeBody[0].y += yVelocity
 
+
         # Checks to see if walls are active and then draws them and reworks the bounds so that if the snake
         # runs into a wall the gane ends
         if activeChallenges["walls"] or (activeChallenges["Top Bottom Walls"] and activeChallenges["Side Walls"]):
@@ -1754,7 +1804,9 @@ while menu:
                 screen.blit(brickWall, (cordIncrement, height - snakesize))
 
             for i in snakeBody:
-                if i.x < snakesize:
+                if i.x >= -(8 * snakesize) and i.x < -snakesize - 1:
+                    pass
+                elif i.x < snakesize:
                     lost = True
                 elif i.x >= width - snakesize:
                     lost = True
@@ -1764,12 +1816,15 @@ while menu:
                     lost = True
 
         elif activeChallenges["Top Bottom Walls"]:
+
             for cordIncrement in range(0, width, snakesize):
                 screen.blit(brickWall, (cordIncrement, 0))
                 screen.blit(brickWall, (cordIncrement, height - snakesize))
 
             for i in snakeBody:
-                if i.x < 0:
+                if i.x >= -(8 * snakesize) and i.x < -snakesize - 1:
+                    pass
+                elif i.x < 0:
                     i.x = width - snakesize
                 elif i.x >= width:
                     i.x = 0
@@ -1779,13 +1834,16 @@ while menu:
                     lost = True
 
         elif activeChallenges["Side Walls"]:
+
             for cordIncrement in range(0, height, snakesize):
                 screen.blit(brickWall, (0, cordIncrement))
                 screen.blit(brickWall, (width - snakesize, cordIncrement))
 
 
             for i in snakeBody:
-                if i.x < snakesize:
+                if i.x >= -(8 * snakesize) and i.x < -snakesize - 1:
+                    pass
+                elif i.x < snakesize:
                     lost = True
                 elif i.x >= width - snakesize:
                     lost = True
@@ -1796,7 +1854,9 @@ while menu:
 
         else:
             for i in snakeBody:
-                if i.x < 0:
+                if i.x >= -(8 * snakesize) and i.x < -snakesize - 1:
+                    pass
+                elif i.x < 0:
                     i.x = width - snakesize
                 elif i.x >= width:
                     i.x = 0
