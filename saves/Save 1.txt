@@ -1,10 +1,10 @@
 highscore = 35
-gamesPlayed = 141
-goldApples = 10
-totalApples = 1133
-timePlayed = 3012801
-distanceTraveled = 3.568000000003105
-keysPressed = 4808
+gamesPlayed = 155
+goldApples = 30
+totalApples = 1167
+timePlayed = 3142887
+distanceTraveled = 3.6994000000033824
+keysPressed = 5028
 bombsHit = 11
 nearMisses = 29
 difficulty = moderate
