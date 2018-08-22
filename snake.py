@@ -1549,7 +1549,10 @@ while menu:
                             # Updates gameInfo so that the active challenges are saved
                             temp = ""
                             for key, value in activeChallenges.items():
-                                temp += key + ":" + str(value) + " ; "
+                                if key == challengeList[len(challengeList) - 2]:
+                                    temp += key + ":" + str(value)
+                                else:
+                                    temp += key + ":" + str(value) + " ; "
 
                             gameInfo["challenges"] = temp
 
@@ -1564,8 +1567,11 @@ while menu:
                     elif event.key == pygame.K_BACKSPACE:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
-                        for key,value in activeChallenges.items():
-                            temp += key + ":" + str(value) + " ; "
+                        for key, value in activeChallenges.items():
+                            if key == challengeList[len(challengeList) - 2]:
+                                temp += key + ":" + str(value)
+                            else:
+                                temp += key + ":" + str(value) + " ; "
 
                         gameInfo["challenges"] = temp
 
@@ -1619,7 +1625,10 @@ while menu:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
                         for key, value in activeChallenges.items():
-                            temp += key + ":" + str(value) + " ; "
+                            if key == challengeList[len(challengeList) - 2]:
+                                temp += key + ":" + str(value)
+                            else:
+                                temp += key + ":" + str(value) + " ; "
 
                         gameInfo["challenges"] = temp
 
@@ -1631,7 +1640,10 @@ while menu:
                         # Updates gameInfo so that the active challenges are saved
                         temp = ""
                         for key, value in activeChallenges.items():
-                            temp += key + ":" + str(value) + " ; "
+                            if key == challengeList[len(challengeList) - 2]:
+                                temp += key + ":" + str(value)
+                            else:
+                                temp += key + ":" + str(value) + " ; "
 
                         gameInfo["challenges"] = temp
 
