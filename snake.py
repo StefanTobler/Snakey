@@ -213,10 +213,6 @@ if pygame.joystick.get_count() >= 1:
     for i in range(joysticks):
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
-#
-#
-#
-#
 
 # Restarts all the game variables
 def restart():
@@ -429,7 +425,6 @@ def getSnakeOpt():
     if len(skinPreviews) != len(skins):
         lock = pygame.image.load("textures{}options{}snakes{}lockalpha.png".format(osType,osType,osType)).convert_alpha()
         lock = pygame.transform.scale(lock, (4 * snakesize,  4 * snakesize))
-
 
         arrowLeft = pygame.image.load("textures{}options{}snakes{}arrow.png".format(osType,osType,osType)).convert_alpha()
         arrowLeft = pygame.transform.scale(arrowLeft, (3 * snakesize, 3 * snakesize))
@@ -1605,7 +1600,10 @@ while menu:
                             # Updates gameInfo so that the active challenges are saved
                             temp = ""
                             for key, value in activeChallenges.items():
-                                temp += key + ":" + str(value) + " ; "
+                                if key == challengeList[len(challengeList) - 2]:
+                                    temp += key + ":" + str(value)
+                                else:
+                                    temp += key + ":" + str(value) + " ; "
 
                             gameInfo["challenges"] = temp
 
@@ -1922,6 +1920,14 @@ while menu:
                         screen.blit(headL, (snakeBody[i].x, snakeBody[i].y))
                 else:
                     screen.blit(head, (snakeBody[i].x, snakeBody[i].y))
+
+        # Draws the Dark Mode Challenge:
+        if activeChallenges["Dark Mode"]:
+            for i in range(0, height + 1, snakesize):
+                for j in range(0 , width + 1, snakesize):
+                    if (((snakeBody[0].x - j) ** 2 + (snakeBody[0].y - i) ** 2) ** (.5)
+                            > 2  * (2 * snakesize ** 2) ** (.5)):
+                        pygame.draw.rect(screen, (0,0,0), (j, i, snakesize, snakesize))
 
         # Checks for snake on snake collision
         if not lost:

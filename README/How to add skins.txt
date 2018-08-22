@@ -14,4 +14,4 @@ If you create an unlock condition add it to updateAchievements function
 
 Create a 200 x 200 png composite of head, body, tail, apples and name it the skins name place this image in the directory Snakey>textures>options>snakes
 
-Follow instructions on line 385 in the getSnakeOpt() function to add snake to the preview menu.
+Follow instructions on line 430 in the getSnakeOpt() function to add snake to the preview menu.
