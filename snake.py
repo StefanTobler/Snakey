@@ -959,7 +959,11 @@ while menu:
 
         displayText("Apples Eaten: " + str(gameInfo["totalApples"]), black, [centerScreen[0], centerScreen[1] - 100], 35)
 
-        displayText("Apples Per Game: " + str(round(gameInfo["totalApples"]/gameInfo["gamesPlayed"],2)), black, [centerScreen[0], centerScreen[1] - 50], 35)
+        if gameInfo["gamesPlayed"] > 0:
+            displayText("Apples Per Game: " + str(round(gameInfo["totalApples"]/gameInfo["gamesPlayed"],2)), black, [centerScreen[0], centerScreen[1] - 50], 35)
+        else:
+            displayText("Apples Per Game: " + 0, black, [centerScreen[0], centerScreen[1] - 50], 35)
+
 
         displayText("Gold Apples Eaten: " + str(gameInfo["goldApples"]), black, centerScreen, 35)
 
@@ -1527,7 +1531,7 @@ while menu:
                         quit()
                     elif event.key == pygame.K_DOWN:
                         # Moves the index of selection up one
-                        if selection < len(challengeList):
+                        if selection < len(challengeList) - 1:
                             selection += 1
                         else:
                             selection = 0
