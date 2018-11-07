@@ -785,7 +785,6 @@ while menu:
     pygame.draw.circle(screen, black, (int(centerScreen[0]), int(exitPos[1] + 100)), 20, 4)
     displayText("=", black, (int(centerScreen[0]), int(exitPos[1] + 100)), 20)
 
-
     # Checks for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
