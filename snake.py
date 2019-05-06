@@ -300,7 +300,7 @@ def loadGame(fileName, seconds = 1):
 # Writes to text document updating all the vatiables
 def saveGame(fileName):
     global gameInfo
-    if fileName == None:
+    if fileName is None:
             pass
     else:
         gameSave = open("saves{}".format(osType) + fileName + ".txt", "w")
@@ -661,10 +661,7 @@ while saveScreen:
 
     # Checks to see if mouse is in the window based on x pos
     if not controller:
-        if pos[0] > 0 and pos[0] < width-1:
-            inWindow = True
-        else:
-            inWindow = False
+        inWindow = 0 < pos[0] < width-1
 
         if pos[1] < ((height - 100) / 3) + 100 and pos[1] > 100 and inWindow:
             pygame.draw.rect(screen, sky_blue,(0, 100, width, (height - 100)/3))
@@ -771,14 +768,10 @@ while menu:
 
     # Checks to see if mouse is in the window based on x pos
     if not controller:
-        if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
-            inWindow = True
-        else:
-            inWindow = False
+        inWindow = 0 < pos[0] < width - 1 and 0 < pos[1] < height - 1
 
     # Checks if the mouse is inside the circle
-    if pos[0] > centerScreen[0] - 20 and pos[0] < centerScreen[0] + 20 and pos[1] < exitPos[1] + 120 \
-            and pos[1] > exitPos[1] + 80 and inWindow:
+    if centerScreen[0] - 20 < pos[0] < centerScreen[0] + 20 and exitPos[1] + 120 > pos[1] > exitPos[1] + 80 and inWindow:
         pygame.draw.circle(screen, sky_blue, (int(centerScreen[0]), int(exitPos[1] + 100)), 20)
 
     # Draws the circle for the stats menu
@@ -983,10 +976,8 @@ while menu:
 
         # Checks to see if mouse is in the window based on x pos
         if not controller:
-            if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
-                inWindow = True
-            else:
-                inWindow = False
+            inWindow = 0 < pos[0] < width - 1 and 0 < pos[1] < height - 1
+
 
             # Changes color of the boxes when the mouse is over it
             if pos[0] < 100 and pos[1] < 52 and inWindow:
@@ -1174,10 +1165,7 @@ while menu:
 
             # Checks to see if mouse is in the window based on x pos
             if not controller:
-                if pos[0] > 0 and pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1:
-                    inWindow = True
-                else:
-                    inWindow = False
+                inWindow = 0 < pos[0] < width - 1 and pos[1] > 0 and pos[1] < height - 1
 
                 # Changes color of the boxes when the mouse is over it
                 if pos[0] < 100 and pos[1] < 52 and inWindow:
