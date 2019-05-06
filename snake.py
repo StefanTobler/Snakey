@@ -606,7 +606,7 @@ while saveScreen:
         elif event.type == pygame.JOYBUTTONDOWN:
             controller = True
             if event.button == 0:
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -616,7 +616,7 @@ while saveScreen:
                         finally:
                             break
             elif event.button == 1:
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -794,7 +794,7 @@ while menu:
                 quit()
             elif event.key == pygame.K_DOWN:
                 # Updates the menu object that should be flashing
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -807,7 +807,7 @@ while menu:
                             break
             elif event.key == pygame.K_UP:
                 # Updates the menu object that should be flashing
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -840,7 +840,7 @@ while menu:
 
         elif event.type == pygame.JOYBUTTONDOWN:
             if event.button == 0:
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -852,7 +852,7 @@ while menu:
                             fCount = 0
                             break
             elif event.button == 1:
-                for i in range(len(selection)):
+                for i, item in enumerate(selection):
                     if selection[i]:
                         selection[i] = False
                         try:
@@ -1070,7 +1070,7 @@ while menu:
                     quit()
                 elif event.key == pygame.K_DOWN:
                     # Updates the menu object that should be flashing
-                    for i in range(len(selection)):
+                    for i, item in enumerate(selection):
                         if selection[i]:
                             selection[i] = False
                             try:
@@ -1083,7 +1083,7 @@ while menu:
                                 break
                 elif event.key == pygame.K_UP:
                     # Updates the menu object that should be flashing
-                    for i in range(len(selection)):
+                    for i, item in enumerate(selection):
                         if selection[i]:
                             selection[i] = False
                             try:
@@ -1114,7 +1114,7 @@ while menu:
                     selection = [True, False, False]
             elif event.type == pygame.JOYBUTTONDOWN:
                 if event.button == 0:
-                    for i in range(len(selection)):
+                    for i, item in enumerate(selection):
                         if selection[i]:
                             selection[i] = False
                             try:
@@ -1126,7 +1126,7 @@ while menu:
                                 fCount = 0
                                 break
                 elif event.button == 1:
-                    for i in range(len(selection)):
+                    for i, item in enumerate(selection):
                         if selection[i]:
                             selection[i] = False
                             try:
@@ -1382,7 +1382,7 @@ while menu:
                         quit()
                     elif event.key == pygame.K_DOWN:
                         # Updates the menu object that should be flashing
-                        for i in range(len(selection)):
+                        for i, item in enumerate(selection):
                             if selection[i]:
                                 selection[i] = False
                                 try:
@@ -1395,7 +1395,7 @@ while menu:
                                     break
                     elif event.key == pygame.K_UP:
                         # Updates the menu object that should be flashing
-                        for i in range(len(selection)):
+                        for i, item in enumerate(selection):
                             if selection[i]:
                                 selection[i] = False
                                 try:
@@ -1438,7 +1438,7 @@ while menu:
                 elif event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 0:
                         # Moves through which menu item is selected
-                        for i in range(len(selection)):
+                        for i, item in enumerate(selection):
                             if selection[i]:
                                 selection[i] = False
                                 try:
@@ -1449,7 +1449,7 @@ while menu:
                                     show = False
                                     fCount = 0
                     elif event.button == 1:
-                        for i in range(len(selection)):
+                        for i, item in enumerate(selection):
                             if selection[i]:
                                 selection[i] = False
                                 try:
