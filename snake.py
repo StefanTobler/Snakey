@@ -122,11 +122,11 @@ sn = Body(x = width/2, y = height/2)
 snakeBody.append(sn)
 
 # Checks for collision in the list of snake body parts. If two body parts occupy the same location then the player loses
-def checkCollision(list):
-    for i in list:
-        for j in list:
-            if list.index(i) != list.index(j) and list.index(i) != 1 and list.index(j) != 1:
-                if (list.index(i) == 0 and list.index(j) == 1) or (list.index(i) == 1 and list.index(j) ==0):
+def checkCollision(bodyList):
+    for i in bodyList:
+        for j in bodyList:
+            if bodyList.index(i) != bodyList.index(j) and bodyList.index(i) != 1 and bodyList.index(j) != 1:
+                if (bodyList.index(i) == 0 and bodyList.index(j) == 1) or (bodyList.index(i) == 1 and bodyList.index(j) ==0):
                     pass
                 else:
                     if j.x == i.x and j.y == i.y:
@@ -171,7 +171,7 @@ stats = False
 
 # Sets all the game loop variables to false. Forces the game to quit
 # When adding a new variable make sure to add it to the global line
-def quit():
+def quitGame():
     global saveScreen, menu, loaded, options, difficulty, snakes, running, lost, challenges, stats
     saveScreen = False
     menu = False
@@ -230,10 +230,10 @@ def restart():
     bombs = []
 
 # Loads in game file
-def loadGame(file, seconds = 1):
+def loadGame(fileName, seconds = 1):
     global loaded, saveScreen, menu, gameInfo, gameOpen, hs, skins, gameSpeed, activeChallenges, bombChance, challengeList
     # Loads saves into a dictionary
-    gameSave = open("saves{}".format(osType) + file + ".txt", "r")
+    gameSave = open("saves{}".format(osType) + fileName + ".txt", "r")
 
     for line in gameSave:
         tempTup = line.strip().split(" = ")
@@ -285,7 +285,7 @@ def loadGame(file, seconds = 1):
     hs = int(gameInfo["highscore"])
 
     gameSave.close()
-    gameOpen = file
+    gameOpen = fileName
 
     # Gets the set game difficulty
     updateDifficulty(gameInfo["difficulty"])
@@ -298,12 +298,12 @@ def loadGame(file, seconds = 1):
     menu = True
 
 # Writes to text document updating all the vatiables
-def saveGame(file):
+def saveGame(fileName):
     global gameInfo
-    if file == None:
+    if fileName == None:
             pass
     else:
-        gameSave = open("saves{}".format(osType) + file + ".txt", "w")
+        gameSave = open("saves{}".format(osType) + fileName + ".txt", "w")
         for key, val in gameInfo.items():
             gameSave.write(key + " = " + str(val) + "\n")
         gameSave.close()
@@ -352,9 +352,9 @@ def getSnakes():
     return temp
 
 # Loads new game from format file
-def loadFormat(file):
+def loadFormat(fileName):
     form = open("saves{}format.txt".format(osType), "r")
-    save = open("saves{}".format(osType) + file + ".txt", "w")
+    save = open("saves{}".format(osType) + fileName + ".txt", "w")
     for i in form:
         save.write(i)
 
@@ -373,7 +373,7 @@ class Skin():
 
     # Sets the preview to a pygame image
     def setPreview(self, img):
-        if type(img) == pygame.Surface:
+        if isinstance(img, pygame.Surface):
             self.preview = img
         else:
             error.write("PREVIEW ERROR: Preview must be a pygame.Surface object\n")
@@ -396,7 +396,7 @@ class Skin():
 
     # Provide a description for the skin i.e. for golden skin "It glistens in the sun"
     def setInfo(self, info):
-        if type(info) == str:
+        if isinstance(info, str):
             self.info = info
         else:
             error.write("SKIN INFO ERROR: Enter a string for the skin info\n")
@@ -407,7 +407,7 @@ class Skin():
 
     # Provide a description of unlock requirements i.e. score 50
     def setUnlock(self, unlock):
-        if type(unlock) == str:
+        if isinstance(unlock, str):
             self.unlock = unlock
         else:
             error.write("SKIN UNLOCK ERROR: Enter a string for the skin unlock\n")
@@ -532,11 +532,11 @@ def pause():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 paused = False
-                quit()
+                quitGame()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     paused = False
-                    quit()
+                    quitGame()
                 elif event.key == pygame.K_p or event.key == pygame.K_BACKSPACE:
                     paused = False
 
@@ -578,10 +578,10 @@ while saveScreen:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            quit()
+            quitGame()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                quit()
+                quitGame()
         elif event.type == pygame.MOUSEBUTTONUP:
             click.play()
             pos = pygame.mouse.get_pos()[1]
@@ -788,10 +788,10 @@ while menu:
     # Checks for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            quit()
+            quitGame()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                quit()
+                quitGame()
             elif event.key == pygame.K_DOWN:
                 # Updates the menu object that should be flashing
                 for i, item in enumerate(selection):
@@ -829,7 +829,7 @@ while menu:
                     options = True
                     selection = [True, False, False, False]
                 else:
-                    quit()
+                    quitGame()
             elif event.key == pygame.K_s:
                 stats = True
 
@@ -871,7 +871,7 @@ while menu:
                     options = True
                     selection = [True, False, False, False]
                 else:
-                    quit()
+                    quitGame()
 
 
     # Causes the selected menu option to fade in and out
@@ -998,10 +998,10 @@ while menu:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                quitGame()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    quit()
+                    quitGame()
                 elif event.key == pygame.K_BACKSPACE:
                     stats = False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -1064,10 +1064,10 @@ while menu:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                quitGame()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    quit()
+                    quitGame()
                 elif event.key == pygame.K_DOWN:
                     # Updates the menu object that should be flashing
                     for i, item in enumerate(selection):
@@ -1241,7 +1241,7 @@ while menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    quitGame()
                 elif event.type == pygame.MOUSEBUTTONUP:
                     click.play()
                     # If player clicks in the back box then the snake menu will end
@@ -1265,7 +1265,7 @@ while menu:
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        quit()
+                        quitGame()
                     elif event.key == pygame.K_RIGHT:
                         # Updates which snake skin should be displayed
                         rate = 0
@@ -1376,10 +1376,10 @@ while menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    quitGame()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE: #or (event.button):
-                        quit()
+                        quitGame()
                     elif event.key == pygame.K_DOWN:
                         # Updates the menu object that should be flashing
                         for i, item in enumerate(selection):
@@ -1524,10 +1524,10 @@ while menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    quitGame()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        quit()
+                        quitGame()
                     elif event.key == pygame.K_DOWN:
                         # Moves the index of selection up one
                         if selection < len(challengeList) - 1:
@@ -1669,13 +1669,13 @@ while menu:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                quitGame()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     gameInfo["keysPressed"] += 1
 
                 if event.key == pygame.K_ESCAPE:
-                    quit()
+                    quitGame()
                 if event.key == pygame.K_UP:
                     yVelocity = -snakesize
                     xVelocity = 0
@@ -1989,11 +1989,11 @@ while menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    quitGame()
                 if event.type == pygame.KEYDOWN:
                     updateAchievements()
                     if event.key == pygame.K_ESCAPE:
-                        quit()
+                        quitGame()
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         restart()
                         gameInfo["gamesPlayed"] += 1
@@ -2008,5 +2008,5 @@ saveGame(gameOpen)
 error.close()
 
 # When all loops are exited game quits
-pygame.quit()
+pygame.quitGame()
 os._exit(1)
